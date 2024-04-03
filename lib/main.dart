@@ -75,7 +75,7 @@ class _MyHomePageState extends State<MyHomePage> {
     Widget page;
     switch (selectedIndex) {
       case 0:
-        page = Placeholder();
+        page = HabitListPage();
         break;
       case 1:
         page = Placeholder();
@@ -131,5 +131,50 @@ class _MyHomePageState extends State<MyHomePage> {
         ), // This trailing comma makes auto-formatting nicer for build methods.
       );
     });
+  }
+}
+
+class HabitListPage extends StatelessWidget {
+  const HabitListPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    // TODO Replace with actual data
+    final habitsPlaceholder = [
+      "Exercise",
+      "Write one code commit",
+      "Drink water when peckish",
+      "Write one Obsidian entry",
+      "Finish one lesson"
+    ];
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: ListView(
+        children: [
+          Text(
+            "Your current habits",
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
+          ),
+          ...habitsPlaceholder.map((e) => ListTile(
+              title: Text(e),
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  IconButton(
+                    style: ButtonStyle(
+                        backgroundColor:
+                            MaterialStateProperty.all(Colors.white),
+                        shape:
+                            MaterialStateProperty.all<RoundedRectangleBorder>(
+                                RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(4)))),
+                    onPressed: () => print("Button pressed"),
+                    icon: Icon(Icons.delete_forever),
+                  )
+                ],
+              )))
+        ],
+      ),
+    );
   }
 }

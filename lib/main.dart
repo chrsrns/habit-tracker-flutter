@@ -41,7 +41,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepOrange),
       ),
-      home: const MyHomePage(title: 'The Flutter Habit Tracker Home Page'),
+      home: const MyHomePage(title: 'CoHabit'),
     );
   }
 }

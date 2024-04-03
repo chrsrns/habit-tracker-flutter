@@ -4,6 +4,22 @@ void main() {
   runApp(const MyApp());
 }
 
+class NavDestinations {
+  const NavDestinations(this.label, this.page, this.icon, this.selectedIcon);
+
+  final String label;
+  final Widget page;
+  final Widget icon;
+  final Widget selectedIcon;
+}
+
+const List<NavDestinations> destinations = <NavDestinations>[
+  NavDestinations('Habits', HabitListPage(), Icon(Icons.widgets_outlined),
+      Icon(Icons.widgets)),
+  NavDestinations('Settings', Placeholder(), Icon(Icons.settings_outlined),
+      Icon(Icons.settings)),
+];
+
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
@@ -50,7 +66,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
-  var selectedIndex = 0; // ← Add this property.
+  var _selectedIndex = 0; // ← Add this property.
 
   void _incrementCounter() {
     setState(() {
@@ -63,6 +79,12 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     // This method is rerun every time setState is called, for instance as done
@@ -72,18 +94,6 @@ class _MyHomePageState extends State<MyHomePage> {
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
 
-    Widget page;
-    switch (selectedIndex) {
-      case 0:
-        page = HabitListPage();
-        break;
-      case 1:
-        page = Placeholder();
-        break;
-      default:
-        throw UnimplementedError('no widget for $selectedIndex');
-    }
-
     return LayoutBuilder(builder: (context, constraints) {
       return Scaffold(
         appBar: AppBar(
@@ -91,35 +101,38 @@ class _MyHomePageState extends State<MyHomePage> {
           // the App.build method, and use it to set our appbar title.
           title: Text(widget.title),
         ),
-
-        body: Row(
-          children: [
-            SafeArea(
-              child: NavigationRail(
-                extended: constraints.maxWidth >= 700,
-                destinations: [
-                  NavigationRailDestination(
-                    icon: Icon(Icons.home),
-                    label: Text('Home'),
-                  ),
-                  NavigationRailDestination(
-                    icon: Icon(Icons.favorite),
-                    label: Text('Favorites'),
-                  ),
-                ],
-                selectedIndex: selectedIndex, // ← Change to this.
-                onDestinationSelected: (value) {
-                  // ↓ Replace print with this.
-                  setState(() {
-                    selectedIndex = value;
-                  });
-                },
+        drawer: NavigationDrawer(
+          onDestinationSelected: _onItemTapped,
+          selectedIndex: _selectedIndex,
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.fromLTRB(28, 16, 16, 10),
+              child: Text(
+                'Header',
+                style: Theme.of(context).textTheme.titleSmall,
               ),
             ),
+            ...destinations.map(
+              (NavDestinations destination) {
+                return NavigationDrawerDestination(
+                  label: Text(destination.label),
+                  icon: destination.icon,
+                  selectedIcon: destination.selectedIcon,
+                );
+              },
+            ),
+            const Padding(
+              padding: EdgeInsets.fromLTRB(28, 16, 28, 10),
+              child: Divider(),
+            ),
+          ],
+        ),
+        body: Row(
+          children: [
             Expanded(
               child: Container(
                 color: Theme.of(context).colorScheme.primaryContainer,
-                child: page,
+                child: destinations[_selectedIndex].page,
               ),
             ),
           ],

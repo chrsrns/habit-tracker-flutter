@@ -66,7 +66,8 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   var _selectedIndex = 0; // ← Add this property.
-  late bool _showNavDrawer;
+  late bool _showNavRail;
+  var _expandNavRail = false;
 
   void _handleNavTap(int index) {
     setState(() {
@@ -74,7 +75,7 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  Widget buildNavDrawerScaffold() {
+  Widget buildNavRailScaffold() {
     return LayoutBuilder(builder: (context, constraints) {
       return Scaffold(
         appBar: AppBar(
@@ -82,34 +83,28 @@ class _MyHomePageState extends State<MyHomePage> {
           // the App.build method, and use it to set our appbar title.
           title: Text(widget.title),
         ),
-        drawer: NavigationDrawer(
-          onDestinationSelected: _handleNavTap,
-          selectedIndex: _selectedIndex,
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.fromLTRB(28, 16, 16, 10),
-              child: Text(
-                'Header',
-                style: Theme.of(context).textTheme.titleSmall,
-              ),
-            ),
-            ...destinations.map(
-              (NavDestinations destination) {
-                return NavigationDrawerDestination(
-                  label: Text(destination.label),
-                  icon: destination.icon,
-                  selectedIcon: destination.selectedIcon,
-                );
-              },
-            ),
-            const Padding(
-              padding: EdgeInsets.fromLTRB(28, 16, 28, 10),
-              child: Divider(),
-            ),
-          ],
-        ),
         body: Row(
           children: [
+            NavigationRail(
+              extended: _expandNavRail,
+              onDestinationSelected: _handleNavTap,
+              selectedIndex: _selectedIndex,
+              labelType: _expandNavRail
+                  ? NavigationRailLabelType.none
+                  : NavigationRailLabelType.all,
+              destinations: destinations.map(
+                (NavDestinations destination) {
+                  return NavigationRailDestination(
+                    label: Text(
+                      destination.label,
+                      style: TextStyle(fontSize: _expandNavRail ? 16 : 14),
+                    ),
+                    icon: destination.icon,
+                    selectedIcon: destination.selectedIcon,
+                  );
+                },
+              ).toList(),
+            ),
             Expanded(
               child: Container(
                 color: Theme.of(context).colorScheme.primaryContainer,
@@ -175,7 +170,8 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _showNavDrawer = MediaQuery.of(context).size.width >= 450;
+    _showNavRail = MediaQuery.of(context).size.width >= 450;
+    _expandNavRail = MediaQuery.of(context).size.width >= 700;
   }
 
   @override
@@ -187,7 +183,7 @@ class _MyHomePageState extends State<MyHomePage> {
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
 
-    return _showNavDrawer ? buildNavDrawerScaffold() : buildBottomNavScaffold();
+    return _showNavRail ? buildNavRailScaffold() : buildBottomNavScaffold();
   }
 }
 

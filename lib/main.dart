@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:testapp/database.dart';
 import 'package:testapp/navigation.dart';
 
-void main() {
+Future<void> main() async {
+  // WidgetsFlutterBinding.ensureInitialized();
+  await DatabaseHelper.initDB();
   runApp(const MyApp());
 }
 

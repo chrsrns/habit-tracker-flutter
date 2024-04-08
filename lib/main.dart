@@ -156,6 +156,50 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    () async {
+      await DatabaseHelper.insertHabit(
+        Habit(name: 'Exercise', recurrances: {
+          1: ["21:10:00", "07:55:10"]
+        }),
+      );
+      await DatabaseHelper.insertHabit(
+        Habit(name: 'Write one code commit', recurrances: {
+          1: ["20:10:00", "08:55:10"]
+        }),
+      );
+      await DatabaseHelper.insertHabit(
+        Habit(name: 'Finish one lesson', recurrances: {
+          1: ["20:10:00", "08:55:10"],
+          5: ["10:15:00", "07:31:10"]
+        }),
+      );
+      await DatabaseHelper.insertHabit(
+        Habit(name: 'Write one Obsidian entry', recurrances: {
+          1: ["21:10:00", "07:55:10"],
+          2: ["21:10:00", "07:55:10"],
+          3: ["21:10:00", "07:55:10"],
+          4: ["21:10:00", "07:55:10"],
+          5: ["21:10:00", "07:55:10"],
+        }),
+      );
+      await DatabaseHelper.insertHabit(
+        Habit(
+          name: 'Be the best',
+        ),
+      );
+      print('retrieve habits');
+      await DatabaseHelper.retrieveHabits();
+
+      print('retrieve obsidian habit');
+      await DatabaseHelper.retrieveHabit('Write one Obsidian entry');
+      await DatabaseHelper.retrieveHabit('Be the best');
+      await DatabaseHelper.retrieveHabit('Warcrime');
+    }();
+  }
+
+  @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     _showNavRail = MediaQuery.of(context).size.width >= 450;

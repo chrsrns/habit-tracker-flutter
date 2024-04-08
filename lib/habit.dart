@@ -1,8 +1,10 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 
 class Habit {
   final String name;
-  final List<List<int>> recurrances;
+  final List<List<Int>> recurrances;
 
   Habit({required this.name, this.recurrances = const []});
 }

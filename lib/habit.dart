@@ -1,6 +1,7 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' as material;
+import 'package:sqlite3/common.dart' as sqlite;
+import 'package:testapp/database.dart';
 
 class HabitListPage extends StatefulWidget {
   const HabitListPage({super.key});
@@ -11,19 +12,21 @@ class HabitListPage extends StatefulWidget {
 
 class _HabitListPageState extends State<HabitListPage> {
   // TODO Replace with actual data
-  final habitsObjPlaceholder = [
-    Habit(name: 'Exercise'),
-    Habit(name: 'Write one code commit'),
-    Habit(name: 'Drink water when peckish'),
-    Habit(name: 'Write one Obsidian entry'),
-    Habit(name: 'Finish one lesson'),
-  ];
+  Future<sqlite.ResultSet> _habitData =
+      Future.value(sqlite.ResultSet([], [], []));
+
+  @override
+  void initState() {
+    super.initState();
+    _habitData = DatabaseHelper.retrieveHabits();
+  }
+
   @override
   Widget build(BuildContext context) {
-    void deleteHabit(Habit habit) {
+    void deleteHabit(String habit) {
       setState(() {
-        print(habitsObjPlaceholder.remove(habit));
-        print(habitsObjPlaceholder);
+        DatabaseHelper.deleteHabitByName(habit);
+        _habitData = DatabaseHelper.retrieveHabits();
       });
     }
 
@@ -37,33 +40,81 @@ class _HabitListPageState extends State<HabitListPage> {
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
             ),
           ),
-          Expanded(
-            child: ListView(
-              children: [
-                ...habitsObjPlaceholder.map((e) => ListTile(
-                    tileColor: Theme.of(context).colorScheme.secondaryContainer,
-                    title: Text(e.name),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        IconButton(
-                          style: ButtonStyle(
-                              backgroundColor:
-                                  MaterialStateProperty.all(Colors.white),
-                              shape: MaterialStateProperty.all<
-                                      RoundedRectangleBorder>(
-                                  RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(4)))),
-                          onPressed: () => deleteHabit(e),
-                          icon: Icon(Icons.delete_forever),
-                        )
-                      ],
-                    ))),
-                SizedBox(
-                  height: 56 + 16,
-                )
-              ],
-            ),
+          FutureBuilder<sqlite.ResultSet>(
+            future: _habitData,
+            builder: (BuildContext context,
+                AsyncSnapshot<sqlite.ResultSet> snapshot) {
+              List<Widget> children;
+              if (snapshot.hasData) {
+                var data = snapshot.data;
+                if (data != null)
+                  children = <Widget>[
+                    ...data.map((e) => Card(
+                          elevation: 5,
+                          child: Padding(
+                            padding: const EdgeInsets.all(4.0),
+                            child: ListTile(
+                                // tileColor:
+                                //     Theme.of(context).colorScheme.secondaryContainer,
+                                title: Text(e['name']),
+                                trailing: material.Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    IconButton(
+                                      style: ButtonStyle(
+                                          backgroundColor:
+                                              MaterialStateProperty.all(
+                                                  Colors.white),
+                                          shape: MaterialStateProperty.all<
+                                                  RoundedRectangleBorder>(
+                                              RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          4)))),
+                                      onPressed: () => deleteHabit(e['name']),
+                                      icon: Icon(Icons.delete_forever),
+                                    )
+                                  ],
+                                )),
+                          ),
+                        )),
+                    SizedBox(
+                      height: 56 + 16,
+                    )
+                  ];
+                else
+                  children = [];
+              } else if (snapshot.hasError) {
+                children = <Widget>[
+                  const Icon(
+                    Icons.error_outline,
+                    color: Colors.red,
+                    size: 60,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 16),
+                    child: Text('Error: ${snapshot.error}'),
+                  ),
+                ];
+              } else {
+                children = const <Widget>[
+                  SizedBox(
+                    width: 60,
+                    height: 60,
+                    child: CircularProgressIndicator(),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(top: 16),
+                    child: Text('Awaiting result...'),
+                  ),
+                ];
+              }
+              return Expanded(
+                child: ListView(
+                  children: children,
+                ),
+              );
+            },
           ),
         ],
       ),

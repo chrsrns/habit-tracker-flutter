@@ -17,6 +17,24 @@ Future<void> openDb() async {
       -- TODO
       PRAGMA user_version = 1;
       COMMIT;
+
+      CREATE TABLE habits (
+        name VARCHAR(200) PRIMARY KEY
+      );
+      CREATE TABLE recurrance (
+        weekday TINYINT NOT NULL,
+        time TEXT NOT NULL,
+        PRIMARY KEY(weekday, time)
+      );
+      CREATE TABLE habit_recurrance (
+        habit_fr INTEGER NOT NULL,
+        weekday_id_fr TINYINT NOT NULL,
+        time_id_fr TEXT NOT NULL,
+        CONSTRAINT habit_recurrance_habit_fk FOREIGN KEY(habit_fr) REFERENCES habits(name),
+        CONSTRAINT habit_recurrance_weekday_fk FOREIGN KEY(weekday_id_fr, time_id_fr) REFERENCES recurrance(weekday,time),
+        CONSTRAINT habit_recurrance_pk PRIMARY KEY(habit_fr, weekday_id_fr, time_id_fr)
+      );
+
     ''');
   }
 }

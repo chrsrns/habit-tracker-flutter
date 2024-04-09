@@ -67,7 +67,7 @@ class DatabaseHelper {
     final recurrancesFromDb = await db
         .select("SELECT * FROM habit_recurrance WHERE habit_fr='$name';");
 
-    print('[Habit # from SELECT]: ${habitFromDb.length}');
+    // print('[Habit # from SELECT]: ${habitFromDb.length}');
     if (habitFromDb.length != 1) return null;
     final habit = Habit(name: name);
     for (final Row row in recurrancesFromDb) {
@@ -81,18 +81,18 @@ class DatabaseHelper {
       habit.recurrances[weekdayFromDb]?.add(row['time_id_fr']);
     }
 
-    print('[Habit]: ');
-    print(habit.toJsonString());
+    // print('[Habit]: ');
+    // print(habit.toJsonString());
   }
 
   static Future<ResultSet> retrieveHabits() async {
     final db = await _db;
 
     var result = await db.select('SELECT * FROM habits;');
-    print("Habits #: ${result.length}");
-    for (final Row row in result) {
-      print('Habit[name: ${row['name']}]');
-    }
+    // print("Habits #: ${result.length}");
+    // for (final Row row in result) {
+    //   print('Habit[name: ${row['name']}]');
+    // }
 
     return result;
   }

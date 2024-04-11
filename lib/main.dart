@@ -161,27 +161,51 @@ class _MyHomePageState extends State<MyHomePage> {
     () async {
       await DatabaseHelper.insertHabit(
         Habit(name: 'Exercise', recurrances: {
-          1: ["21:10:00", "07:55:10"]
+          1: [
+            TimeRange(start_hour: 21, start_minute: 10),
+            TimeRange(start_hour: 7, start_minute: 55)
+          ],
         }),
       );
       await DatabaseHelper.insertHabit(
         Habit(name: 'Write one code commit', recurrances: {
-          1: ["20:10:00", "08:55:10"]
+          1: [
+            TimeRange(start_hour: 20, start_minute: 10),
+            TimeRange(start_hour: 8, start_minute: 55)
+          ],
         }),
       );
       await DatabaseHelper.insertHabit(
         Habit(name: 'Finish one lesson', recurrances: {
-          1: ["20:10:00", "08:55:10"],
-          5: ["10:15:00", "07:31:10"]
+          1: [TimeRange(start_hour: 12)],
+          5: [
+            TimeRange(start_hour: 10, end_hour: 10),
+            TimeRange(start_hour: 16, end_hour: 16)
+          ]
         }),
       );
       await DatabaseHelper.insertHabit(
         Habit(name: 'Write one Obsidian entry', recurrances: {
-          1: ["21:10:00", "07:55:10"],
-          2: ["21:10:00", "07:55:10"],
-          3: ["21:10:00", "07:55:10"],
-          4: ["21:10:00", "07:55:10"],
-          5: ["21:10:00", "07:55:10"],
+          1: [
+            TimeRange(start_hour: 21, start_minute: 10),
+            TimeRange(start_hour: 7, start_minute: 55)
+          ],
+          2: [
+            TimeRange(start_hour: 21, start_minute: 10),
+            TimeRange(start_hour: 7, start_minute: 55)
+          ],
+          3: [
+            TimeRange(start_hour: 21, start_minute: 10),
+            TimeRange(start_hour: 7, start_minute: 55)
+          ],
+          4: [
+            TimeRange(start_hour: 21, start_minute: 10),
+            TimeRange(start_hour: 7, start_minute: 55)
+          ],
+          5: [
+            TimeRange(start_hour: 21, start_minute: 10),
+            TimeRange(start_hour: 7, start_minute: 55)
+          ],
         }),
       );
       await DatabaseHelper.insertHabit(

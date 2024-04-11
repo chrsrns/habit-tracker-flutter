@@ -1,20 +1,46 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:ui';
 
 import 'package:sqlite3/common.dart';
 import 'package:testapp/db/db.dart';
 
+class TimeRange {
+  final int start_hour;
+  final int start_minute;
+
+  final int end_hour;
+  final int end_minute;
+
+  TimeRange(
+      {required this.start_hour,
+      this.start_minute = 0,
+      end_hour,
+      this.end_minute = 0})
+      : this.end_hour = start_hour;
+
+  String get start_time => "$start_hour:$start_minute:00";
+
+  String get end_time => "$end_hour:$end_minute:00";
+
+  @override
+  String toString() {
+    return "$start_hour:$start_minute:00";
+  }
+}
+
 class Habit {
   final String name;
-  Map<int, List<String>> recurrances = {};
+  Map<int, List<TimeRange>> recurrances = {};
 
-  Habit({required this.name, recurrances}) : recurrances = recurrances ?? {};
+  Habit({required this.name, Map<int, List<TimeRange>>? recurrances})
+      : recurrances = recurrances ?? {};
 
   Map<String, dynamic> toJson() {
     return {
       'name': name,
-      'recurrences':
-          recurrances.map((key, value) => MapEntry(key.toString(), value)),
+      'recurrences': recurrances
+          .map((key, value) => MapEntry(key.toString(), value.toString())),
     };
   }
 
@@ -48,11 +74,14 @@ class DatabaseHelper {
       if (times == null) continue;
 
       for (var time in times) {
+        var sql = """
+            INSERT INTO recurrance(${TableRecurrance.weekday}, ${TableRecurrance.starttime}, ${TableRecurrance.endtime}) VALUES('$weekday', '${time.start_time}', '${time.end_time}') ON CONFLICT DO NOTHING;
+            INSERT INTO habit_recurrance(${TableHabitRecurrance.habit_fr}, ${TableHabitRecurrance.weekday_id_fr}, ${TableHabitRecurrance.starttime_id_fr}, ${TableHabitRecurrance.endtime_id_fr}) VALUES('${habit.name}','$weekday','${time.start_time}', '${time.end_time}') ON CONFLICT DO NOTHING;
+          """;
+        print("[Executing insert SQL]");
+        print(sql);
         db.execute(
-          """
-            INSERT INTO recurrance(weekday, time) VALUES('$weekday', '$time') ON CONFLICT DO NOTHING;
-            INSERT INTO habit_recurrance(habit_fr,weekday_id_fr,time_id_fr) VALUES('${habit.name}','$weekday','$time') ON CONFLICT DO NOTHING;
-          """,
+          sql,
         );
       }
     }
@@ -71,18 +100,39 @@ class DatabaseHelper {
     if (habitFromDb.length != 1) return null;
     final habit = Habit(name: name);
     for (final Row row in recurrancesFromDb) {
-      if (row['weekday_id_fr'] == null || row['time_id_fr'] == null) continue;
-      final int weekdayFromDb = row['weekday_id_fr'];
+      final int weekdayFromDb = row['weekday_id_fr'] ?? -1;
+      final rowStartTime = row[TableHabitRecurrance.starttime_id_fr.name] ?? '';
+      final rowEndTime = row[TableHabitRecurrance.endtime_id_fr.name] ?? '';
+      if (weekdayFromDb == -1 || rowStartTime == '' || rowEndTime == '') {
+        print(
+            "Invalid habit [wd: $weekdayFromDb, st: $rowStartTime, et: $rowEndTime]");
+        continue;
+      }
+
+      final start_time = rowStartTime.split(':');
+      final end_time = rowEndTime.split(':');
+
+      final start_hour = int.tryParse(start_time[0]) ?? -1;
+      final start_minute = int.tryParse(start_time[1]) ?? -1;
+
+      final end_hour = int.tryParse(end_time[0]) ?? -1;
+      final end_minute = int.tryParse(end_time[1]) ?? -1;
 
       if (!habit.recurrances.containsKey(weekdayFromDb))
         habit.recurrances[weekdayFromDb] = [];
 
       // TODO Shouldn't be null, but Dart safety checker says otherwise
-      habit.recurrances[weekdayFromDb]?.add(row['time_id_fr']);
+      habit.recurrances[weekdayFromDb]?.add(TimeRange(
+        start_hour: start_hour,
+        start_minute: start_minute,
+        end_hour: end_hour,
+        end_minute: end_minute,
+      ));
     }
 
-    // print('[Habit]: ');
-    // print(habit.toJsonString());
+    print('[Habit]: ');
+    print(habit.toJsonString());
+    return habit;
   }
 
   static Future<ResultSet> retrieveHabits() async {
@@ -108,4 +158,30 @@ class DatabaseHelper {
 
     db.execute("DELETE FROM habits WHERE name='${habit}'");
   }
+}
+
+enum TableHabits {
+  name;
+
+  @override
+  String toString() => this.name;
+}
+
+enum TableRecurrance {
+  weekday,
+  starttime,
+  endtime;
+
+  @override
+  String toString() => this.name;
+}
+
+enum TableHabitRecurrance {
+  habit_fr,
+  weekday_id_fr,
+  starttime_id_fr,
+  endtime_id_fr;
+
+  @override
+  String toString() => this.name;
 }

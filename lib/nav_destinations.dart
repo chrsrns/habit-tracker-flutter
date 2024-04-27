@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:testapp/habit.dart';
+import 'package:testapp/habit_list_page.dart';
 
 class NavDestinations {
   const NavDestinations(this.label, this.page, this.icon, this.selectedIcon);

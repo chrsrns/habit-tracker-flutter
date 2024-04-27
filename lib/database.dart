@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:ui';
 
 import 'package:sqlite3/common.dart';
 import 'package:testapp/db/db.dart';

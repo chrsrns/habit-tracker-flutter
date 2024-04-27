@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:testapp/database.dart';
-import 'package:testapp/nav_destinations.dart';
 import 'package:testapp/home_page.dart';
 
 Future<void> main() async {

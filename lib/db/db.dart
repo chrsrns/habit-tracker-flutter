@@ -1,5 +1,5 @@
 import 'package:sqlite3/common.dart' show CommonDatabase;
-import 'package:testapp/database.dart';
+import 'package:testapp/db/table_columns.dart';
 import 'sqlite3/sqlite3.dart' show openSqliteDb;
 
 late CommonDatabase sqliteDb;

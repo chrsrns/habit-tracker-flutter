@@ -1,52 +1,10 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:sqlite3/common.dart';
 import 'package:testapp/db/db.dart';
-
-class TimeRange {
-  final int start_hour;
-  final int start_minute;
-
-  final int end_hour;
-  final int end_minute;
-
-  TimeRange(
-      {required this.start_hour,
-      this.start_minute = 0,
-      end_hour,
-      this.end_minute = 0})
-      : this.end_hour = start_hour;
-
-  String get start_time => "$start_hour:$start_minute:00";
-
-  String get end_time => "$end_hour:$end_minute:00";
-
-  @override
-  String toString() {
-    return "$start_hour:$start_minute:00";
-  }
-}
-
-class Habit {
-  final String name;
-  Map<int, List<TimeRange>> recurrances = {};
-
-  Habit({required this.name, Map<int, List<TimeRange>>? recurrances})
-      : recurrances = recurrances ?? {};
-
-  Map<String, dynamic> toJson() {
-    return {
-      'name': name,
-      'recurrences': recurrances
-          .map((key, value) => MapEntry(key.toString(), value.toString())),
-    };
-  }
-
-  String toJsonString() {
-    return jsonEncode(toJson());
-  }
-}
+import 'package:testapp/db/db_habit.dart';
+import 'package:testapp/db/db_time_range.dart';
+import 'package:testapp/db/table_columns.dart';
 
 class DatabaseHelper {
   static Future<CommonDatabase> get _db async {
@@ -157,30 +115,4 @@ class DatabaseHelper {
 
     db.execute("DELETE FROM habits WHERE name='${habit}'");
   }
-}
-
-enum TableHabits {
-  name;
-
-  @override
-  String toString() => this.name;
-}
-
-enum TableRecurrance {
-  weekday,
-  starttime,
-  endtime;
-
-  @override
-  String toString() => this.name;
-}
-
-enum TableHabitRecurrance {
-  habit_fr,
-  weekday_id_fr,
-  starttime_id_fr,
-  endtime_id_fr;
-
-  @override
-  String toString() => this.name;
 }

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:testapp/database.dart';
+import 'package:testapp/db/database_helper.dart';
+import 'package:testapp/db/db_habit.dart';
+import 'package:testapp/db/db_time_range.dart';
 import 'package:testapp/nav_destinations.dart';
 
 class HomePage extends StatefulWidget {

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:testapp/db/database_helper.dart';
-import 'package:testapp/db/db_habit.dart';
-import 'package:testapp/db/db_time_range.dart';
-import 'package:testapp/nav_destinations.dart';
+import 'package:cohabit/db/database_helper.dart';
+import 'package:cohabit/db/db_habit.dart';
+import 'package:cohabit/db/db_time_range.dart';
+import 'package:cohabit/nav_destinations.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key, required this.title}) : super(key: key);

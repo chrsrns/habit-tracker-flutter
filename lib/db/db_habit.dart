@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:testapp/db/db_time_range.dart';
+import 'package:cohabit/db/db_time_range.dart';
 
 class Habit {
   final String name;

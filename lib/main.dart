@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:testapp/db/database_helper.dart';
-import 'package:testapp/home_page.dart';
+import 'package:cohabit/db/database_helper.dart';
+import 'package:cohabit/home_page.dart';
 
 Future<void> main() async {
   // WidgetsFlutterBinding.ensureInitialized();

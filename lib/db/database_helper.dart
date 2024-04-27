@@ -1,10 +1,10 @@
 import 'dart:async';
 
 import 'package:sqlite3/common.dart';
-import 'package:testapp/db/db.dart';
-import 'package:testapp/db/db_habit.dart';
-import 'package:testapp/db/db_time_range.dart';
-import 'package:testapp/db/table_columns.dart';
+import 'package:cohabit/db/db.dart';
+import 'package:cohabit/db/db_habit.dart';
+import 'package:cohabit/db/db_time_range.dart';
+import 'package:cohabit/db/table_columns.dart';
 
 class DatabaseHelper {
   static Future<CommonDatabase> get _db async {

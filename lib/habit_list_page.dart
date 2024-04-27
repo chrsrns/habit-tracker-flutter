@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/material.dart' as material;
 import 'package:sqlite3/common.dart' as sqlite;
-import 'package:testapp/db/database_helper.dart';
+import 'package:cohabit/db/database_helper.dart';
 
 class HabitListPage extends StatefulWidget {
   const HabitListPage({super.key});

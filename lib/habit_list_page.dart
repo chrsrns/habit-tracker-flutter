@@ -20,6 +20,7 @@ class _HabitListPageState extends State<HabitListPage> {
   @override
   void initState() {
     super.initState();
+    // TODO  remove delay at some point
     _habitData = Future.delayed(
             Duration(seconds: 0), (() => DatabaseHelper.retrieveHabits()))
         .whenComplete(() => setState(() {
@@ -35,6 +36,7 @@ class _HabitListPageState extends State<HabitListPage> {
         _isLoading = true;
         print(_isLoading);
         DatabaseHelper.deleteHabitByName(habit);
+        // TODO remove delay at some point
         _habitData = Future.delayed(
                 Duration(seconds: 0), (() => DatabaseHelper.retrieveHabits()))
             .whenComplete(() => setState(() {

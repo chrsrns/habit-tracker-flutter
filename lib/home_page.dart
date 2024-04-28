@@ -128,6 +128,8 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
+
+    // TODO remove at some point
     () async {
       await DatabaseHelper.insertHabit(
         Habit(name: 'Exercise', recurrances: {

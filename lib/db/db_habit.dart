@@ -8,7 +8,8 @@ class Habit {
   Habit({required this.name, Map<int, List<TimeRange>>? recurrances})
       : recurrances = recurrances ?? {};
 
-  Map<String, dynamic> toJson() {
+  // For Debugging
+  Map<String, dynamic> _toJson() {
     return {
       'name': name,
       'recurrences': recurrances
@@ -17,6 +18,6 @@ class Habit {
   }
 
   String toJsonString() {
-    return jsonEncode(toJson());
+    return jsonEncode(_toJson());
   }
 }

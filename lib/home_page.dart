@@ -1,3 +1,4 @@
+import 'package:cohabit/new_habit_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:cohabit/db/database_helper.dart';
 import 'package:cohabit/db/db_habit.dart';
@@ -72,8 +73,14 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
         floatingActionButton: FloatingActionButton(
-          onPressed: () => print("TODO"), //TODO
-          tooltip: 'Increment',
+          onPressed: () {
+            showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return NewHabitDialog();
+                });
+          },
+          tooltip: 'New habit',
           child: const Icon(Icons.add),
         ),
       );

@@ -104,6 +104,14 @@ class _NewHabitDialogState extends State<NewHabitDialog> {
                   shrinkWrap: true,
                   children: [
                     ...uiEntries.items.map((recurrance_pair) {
+                      var list = weekdayDropdownItems.where((element) {
+                        for (final pair in uiEntries.items) {
+                          if (recurrance_pair.weekday == element.value)
+                            return true;
+                          if (pair.weekday == element.value) return false;
+                        }
+                        return true;
+                      }).toList();
                       return Container(
                         margin: EdgeInsets.fromLTRB(0, 8, 0, 8),
                         child: Row(
@@ -111,7 +119,7 @@ class _NewHabitDialogState extends State<NewHabitDialog> {
                             Expanded(
                               flex: 1,
                               child: DropdownButton(
-                                items: weekdayDropdownItems,
+                                items: list,
                                 value: recurrance_pair.weekday,
                                 onChanged: (value) {
                                   // recurrance_pair.weekday = value as Weekday?;

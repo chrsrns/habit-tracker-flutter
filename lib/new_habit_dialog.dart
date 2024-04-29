@@ -43,9 +43,8 @@ class _RecurrancePairList {
       }
     }
     if (toRemove.isEmpty) {
-      items.firstWhere((element) => element == recurrancePair).weekday =
-          weekday;
-      items.remove(recurrancePair);
+      var firstWhere = items.firstWhere((element) => element == recurrancePair);
+      firstWhere.weekday = weekday;
     } else {
       tmp.timeranges.addAll(recurrancePair.timeranges);
       items.removeWhere((element) {

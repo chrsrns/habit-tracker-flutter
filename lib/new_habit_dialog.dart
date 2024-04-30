@@ -127,9 +127,10 @@ class _NewHabitDialogState extends State<NewHabitDialog> {
                                 onChanged: (value) {
                                   // recurrance_pair.weekday = value as Weekday?;
                                   if (value is Weekday)
-                                    uiEntries.updateWeekdayOfPair(
-                                        recurrance_pair, value);
-                                  setState(() {});
+                                    setState(() {
+                                      uiEntries.updateWeekdayOfPair(
+                                          recurrance_pair, value);
+                                    });
                                 },
                               ),
                             ),

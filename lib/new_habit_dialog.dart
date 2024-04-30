@@ -170,8 +170,8 @@ class _NewHabitDialogState extends State<NewHabitDialog> {
                   start_hour: Random().nextInt(23),
                   end_hour: Random().nextInt(23));
 
-              final pair = _MutableRecurrancePair(weekday: weekday);
-              pair.timeranges.add(trange);
+              final pair = _MutableRecurrancePair();
+              // pair.timeranges.add(trange);
 
               setState(() {
                 uiEntries.add(pair);

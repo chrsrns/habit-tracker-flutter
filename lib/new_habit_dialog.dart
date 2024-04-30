@@ -139,7 +139,13 @@ class _NewHabitDialogState extends State<NewHabitDialog> {
                               child: Column(
                                 children: [
                                   ...recurrance_pair.timeranges
-                                      .map((e) => Text(e.toString()))
+                                      .map((e) => Text(e.toString())),
+                                  ElevatedButton(
+                                      onPressed: () {
+                                        showTimeRangePickers(
+                                            context, recurrance_pair);
+                                      },
+                                      child: Text("Add new time..."))
                                 ],
                               ),
                             )
@@ -174,5 +180,38 @@ class _NewHabitDialogState extends State<NewHabitDialog> {
             child: Text("Add new button"))
       ],
     );
+  }
+
+  void showTimeRangePickers(
+      BuildContext context, _MutableRecurrancePair recurrance_pair) {
+    final timePicker = showTimePicker(
+        context: context,
+        helpText: "What is the starting time of this habit?",
+        initialTime: TimeOfDay.now(),
+        initialEntryMode: TimePickerEntryMode.dialOnly);
+    timePicker.then((startTime) {
+      if (startTime != null) {
+        final startHour = startTime.hour;
+        final startMinute = startTime.minute;
+        final endTimePicker = showTimePicker(
+            context: context,
+            helpText: "What is the ending time of this habit?",
+            initialTime: TimeOfDay.now());
+        endTimePicker.then((endTime) {
+          if (endTime != null) {
+            setState(() {
+              var endHour = endTime.hour;
+              var endMinute = endTime.minute;
+              var timeRange = TimeRange(
+                  start_hour: startHour,
+                  start_minute: startMinute,
+                  end_hour: endHour,
+                  end_minute: endMinute);
+              recurrance_pair.timeranges.add(timeRange);
+            });
+          }
+        });
+      }
+    });
   }
 }

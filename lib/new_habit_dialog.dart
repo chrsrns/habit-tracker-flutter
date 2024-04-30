@@ -87,7 +87,10 @@ class _NewHabitDialogState extends State<NewHabitDialog> {
       title: Text("Create New Habit"),
       content: Center(
         child: SizedBox(
-          width: MediaQuery.of(context).size.width - 400,
+          // TODO add animation to this dynamic sizing
+          width: MediaQuery.of(context).size.width >= 700
+              ? MediaQuery.of(context).size.width - 400
+              : MediaQuery.of(context).size.width,
           child: Column(
             children: [
               TextField(

@@ -172,10 +172,14 @@ class _NewHabitDialogState extends State<NewHabitDialog> {
               SizedBox(height: 8),
               Divider(),
               Expanded(
-                child: ListView(
+                child: ListView.separated(
                   scrollDirection: Axis.vertical,
                   shrinkWrap: true,
-                  children: entriesList,
+                  itemCount: entriesList.length,
+                  itemBuilder: (context, index) {
+                    return entriesList[index];
+                  },
+                  separatorBuilder: (context, index) => Divider(),
                 ),
               )
             ],

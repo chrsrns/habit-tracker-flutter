@@ -112,7 +112,32 @@ class _NewHabitDialogState extends State<NewHabitDialog> {
               flex: 1,
               child: Column(
                 children: [
-                  ...recurrance_pair.timeranges.map((e) => Text(e.toString())),
+                  ...recurrance_pair.timeranges.map((e) => Container(
+                        margin: EdgeInsets.only(top: 8.0, bottom: 8.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            ElevatedButton(
+                                onPressed: () {},
+                                child: Container(
+                                  padding: EdgeInsets.only(
+                                      left: 12, right: 12, top: 8, bottom: 8),
+                                  child: Container(
+                                    height: 20,
+                                    child: Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        Text("${e.start_time}"),
+                                        VerticalDivider(),
+                                        Text("${e.end_time}")
+                                      ],
+                                    ),
+                                  ),
+                                )),
+                          ],
+                        ),
+                      )),
                   ElevatedButton(
                       onPressed: () {
                         if (recurrance_pair.weekday == null) {

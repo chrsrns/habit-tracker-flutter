@@ -83,6 +83,51 @@ class _NewHabitDialogState extends State<NewHabitDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final entriesList = uiEntries.items.map((recurrance_pair) {
+      var list = weekdayDropdownItems.where((element) {
+        for (final pair in uiEntries.items) {
+          if (recurrance_pair.weekday == element.value) return true;
+          if (pair.weekday == element.value) return false;
+        }
+        return true;
+      }).toList();
+      return Container(
+        child: Row(
+          children: [
+            Expanded(
+              flex: 1,
+              child: DropdownButton(
+                hint: Text("Select weekday"),
+                items: list,
+                value: recurrance_pair.weekday,
+                onChanged: (value) {
+                  if (value is Weekday)
+                    setState(() {
+                      uiEntries.updateWeekdayOfPair(recurrance_pair, value);
+                    });
+                },
+              ),
+            ),
+            Expanded(
+              flex: 1,
+              child: Column(
+                children: [
+                  ...recurrance_pair.timeranges.map((e) => Text(e.toString())),
+                  ElevatedButton(
+                      onPressed: () {
+                        if (recurrance_pair.weekday == null) {
+                        } else
+                          showTimeRangePickers(context, recurrance_pair);
+                      },
+                      child: Text("Add new time..."))
+                ],
+              ),
+            ),
+            Divider()
+          ],
+        ),
+      );
+    }).toList();
     return AlertDialog(
       title: Text("Create New Habit"),
       content: Center(
@@ -105,55 +150,7 @@ class _NewHabitDialogState extends State<NewHabitDialog> {
                 child: ListView(
                   scrollDirection: Axis.vertical,
                   shrinkWrap: true,
-                  children: [
-                    ...uiEntries.items.map((recurrance_pair) {
-                      var list = weekdayDropdownItems.where((element) {
-                        for (final pair in uiEntries.items) {
-                          if (recurrance_pair.weekday == element.value)
-                            return true;
-                          if (pair.weekday == element.value) return false;
-                        }
-                        return true;
-                      }).toList();
-                      return Container(
-                        margin: EdgeInsets.fromLTRB(0, 8, 0, 8),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              flex: 1,
-                              child: DropdownButton(
-                                items: list,
-                                value: recurrance_pair.weekday,
-                                onChanged: (value) {
-                                  // recurrance_pair.weekday = value as Weekday?;
-                                  if (value is Weekday)
-                                    setState(() {
-                                      uiEntries.updateWeekdayOfPair(
-                                          recurrance_pair, value);
-                                    });
-                                },
-                              ),
-                            ),
-                            Expanded(
-                              flex: 1,
-                              child: Column(
-                                children: [
-                                  ...recurrance_pair.timeranges
-                                      .map((e) => Text(e.toString())),
-                                  ElevatedButton(
-                                      onPressed: () {
-                                        showTimeRangePickers(
-                                            context, recurrance_pair);
-                                      },
-                                      child: Text("Add new time..."))
-                                ],
-                              ),
-                            )
-                          ],
-                        ),
-                      );
-                    })
-                  ],
+                  children: entriesList,
                 ),
               )
             ],

@@ -128,9 +128,9 @@ class _NewHabitDialogState extends State<NewHabitDialog> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.center,
                                       children: [
-                                        Text("${e.start_time}"),
+                                        Text("${e.startTime}"),
                                         VerticalDivider(),
-                                        Text("${e.end_time}")
+                                        Text("${e.endTime}")
                                       ],
                                     ),
                                   ),
@@ -193,8 +193,8 @@ class _NewHabitDialogState extends State<NewHabitDialog> {
               Weekday weekday = Weekday.values[weekdayInt];
 
               TimeRange trange = TimeRange(
-                  start_hour: Random().nextInt(23),
-                  end_hour: Random().nextInt(23));
+                  startHour: Random().nextInt(23),
+                  endHour: Random().nextInt(23));
 
               final pair = _MutableRecurrancePair();
               // pair.timeranges.add(trange);
@@ -229,10 +229,10 @@ class _NewHabitDialogState extends State<NewHabitDialog> {
               var endHour = endTime.hour;
               var endMinute = endTime.minute;
               var timeRange = TimeRange(
-                  start_hour: startHour,
-                  start_minute: startMinute,
-                  end_hour: endHour,
-                  end_minute: endMinute);
+                  startHour: startHour,
+                  startMinute: startMinute,
+                  endHour: endHour,
+                  endMinute: endMinute);
               recurrance_pair.timeranges.add(timeRange);
             });
           }

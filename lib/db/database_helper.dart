@@ -32,8 +32,8 @@ class DatabaseHelper {
 
       for (var time in times) {
         var sql = """
-            INSERT INTO recurrance(${TableRecurrance.weekday}, ${TableRecurrance.starttime}, ${TableRecurrance.endtime}) VALUES('$weekday', '${time.start_time}', '${time.end_time}') ON CONFLICT DO NOTHING;
-            INSERT INTO habit_recurrance(${TableHabitRecurrance.habit_fr}, ${TableHabitRecurrance.weekday_id_fr}, ${TableHabitRecurrance.starttime_id_fr}, ${TableHabitRecurrance.endtime_id_fr}) VALUES('${habit.name}','$weekday','${time.start_time}', '${time.end_time}') ON CONFLICT DO NOTHING;
+            INSERT INTO recurrance(${TableRecurrance.weekday}, ${TableRecurrance.starttime}, ${TableRecurrance.endtime}) VALUES('$weekday', '${time.startTime}', '${time.endTime}') ON CONFLICT DO NOTHING;
+            INSERT INTO habit_recurrance(${TableHabitRecurrance.habit_fr}, ${TableHabitRecurrance.weekday_id_fr}, ${TableHabitRecurrance.starttime_id_fr}, ${TableHabitRecurrance.endtime_id_fr}) VALUES('${habit.name}','$weekday','${time.startTime}', '${time.endTime}') ON CONFLICT DO NOTHING;
           """;
         print("[Executing insert SQL]");
         print(sql);
@@ -80,10 +80,10 @@ class DatabaseHelper {
 
       // TODO Shouldn't be null, but Dart safety checker says otherwise
       habit.recurrances[weekdayFromDb]?.add(TimeRange(
-        start_hour: start_hour,
-        start_minute: start_minute,
-        end_hour: end_hour,
-        end_minute: end_minute,
+        startHour: start_hour,
+        startMinute: start_minute,
+        endHour: end_hour,
+        endMinute: end_minute,
       ));
     }
 

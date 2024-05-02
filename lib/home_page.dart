@@ -141,49 +141,49 @@ class _HomePageState extends State<HomePage> {
       await DatabaseHelper.insertHabit(
         Habit(name: 'Exercise', recurrances: {
           1: [
-            TimeRange(start_hour: 21, start_minute: 10),
-            TimeRange(start_hour: 7, start_minute: 55)
+            TimeRange(startHour: 21, startMinute: 10),
+            TimeRange(startHour: 7, startMinute: 55)
           ],
         }),
       );
       await DatabaseHelper.insertHabit(
         Habit(name: 'Write one code commit', recurrances: {
           1: [
-            TimeRange(start_hour: 20, start_minute: 10),
-            TimeRange(start_hour: 8, start_minute: 55)
+            TimeRange(startHour: 20, startMinute: 10),
+            TimeRange(startHour: 8, startMinute: 55)
           ],
         }),
       );
       await DatabaseHelper.insertHabit(
         Habit(name: 'Finish one lesson', recurrances: {
-          1: [TimeRange(start_hour: 12)],
+          1: [TimeRange(startHour: 12)],
           5: [
-            TimeRange(start_hour: 10, end_hour: 10),
-            TimeRange(start_hour: 16, end_hour: 16)
+            TimeRange(startHour: 10, endHour: 10),
+            TimeRange(startHour: 16, endHour: 16)
           ]
         }),
       );
       await DatabaseHelper.insertHabit(
         Habit(name: 'Write one Obsidian entry', recurrances: {
           1: [
-            TimeRange(start_hour: 21, start_minute: 10),
-            TimeRange(start_hour: 7, start_minute: 55)
+            TimeRange(startHour: 21, startMinute: 10),
+            TimeRange(startHour: 7, startMinute: 55)
           ],
           2: [
-            TimeRange(start_hour: 21, start_minute: 10),
-            TimeRange(start_hour: 7, start_minute: 55)
+            TimeRange(startHour: 21, startMinute: 10),
+            TimeRange(startHour: 7, startMinute: 55)
           ],
           3: [
-            TimeRange(start_hour: 21, start_minute: 10),
-            TimeRange(start_hour: 7, start_minute: 55)
+            TimeRange(startHour: 21, startMinute: 10),
+            TimeRange(startHour: 7, startMinute: 55)
           ],
           4: [
-            TimeRange(start_hour: 21, start_minute: 10),
-            TimeRange(start_hour: 7, start_minute: 55)
+            TimeRange(startHour: 21, startMinute: 10),
+            TimeRange(startHour: 7, startMinute: 55)
           ],
           5: [
-            TimeRange(start_hour: 21, start_minute: 10),
-            TimeRange(start_hour: 7, start_minute: 55)
+            TimeRange(startHour: 21, startMinute: 10),
+            TimeRange(startHour: 7, startMinute: 55)
           ],
         }),
       );

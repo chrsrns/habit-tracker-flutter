@@ -1,20 +1,29 @@
 class TimeRange {
-  final int start_hour;
-  final int start_minute;
+  late int _start_hour;
+  late int _start_minute;
 
-  final int end_hour;
-  final int end_minute;
+  late int _end_hour;
+  late int _end_minute;
 
   TimeRange(
-      {required this.start_hour,
-      this.start_minute = 0,
-      end_hour,
-      this.end_minute = 0})
-      : this.end_hour = start_hour;
+      {required int start_hour,
+      int? start_minute,
+      int? end_hour,
+      int? end_minute}) {
+    this._start_hour = start_hour;
+    this._start_minute = start_minute ?? 0;
+    this._end_hour = end_hour ?? start_hour;
+    this._end_minute = end_minute ?? start_minute ?? 0;
+  }
 
-  String get start_time => "$start_hour:$start_minute:00";
+  int get start_hour => _start_hour;
+  int get start_minute => _start_minute;
+  int get end_hour => _end_hour;
+  int get end_minute => _end_minute;
 
-  String get end_time => "$end_hour:$end_minute:00";
+  String get start_time => "$_start_hour:$_start_minute:00";
+
+  String get end_time => "$_end_hour:$_end_minute:00";
 
   @override
   String toString() {

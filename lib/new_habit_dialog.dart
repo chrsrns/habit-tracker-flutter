@@ -118,7 +118,43 @@ class _NewHabitDialogState extends State<NewHabitDialog> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             ElevatedButton(
-                                onPressed: () {},
+                                onPressed: () {
+                                  final timePicker = showTimePicker(
+                                      context: context,
+                                      helpText:
+                                          "What is the starting time of this habit?",
+                                      initialTime: TimeOfDay(
+                                          hour: e.startHour,
+                                          minute: e.startMinute),
+                                      initialEntryMode:
+                                          TimePickerEntryMode.dialOnly);
+                                  timePicker.then((startTime) {
+                                    if (startTime != null) {
+                                      final startHour = startTime.hour;
+                                      final startMinute = startTime.minute;
+                                      final endTimePicker = showTimePicker(
+                                          context: context,
+                                          helpText:
+                                              "What is the ending time of this habit?",
+                                          initialTime: TimeOfDay(
+                                              hour: e.endHour,
+                                              minute: e.endMinute));
+                                      endTimePicker.then((endTime) {
+                                        if (endTime != null) {
+                                          setState(() {
+                                            var endHour = endTime.hour;
+                                            var endMinute = endTime.minute;
+                                            e.updateTime(
+                                                startHour: startHour,
+                                                startMinute: startMinute,
+                                                endHour: endHour,
+                                                endMinute: endMinute);
+                                          });
+                                        }
+                                      });
+                                    }
+                                  });
+                                },
                                 child: Container(
                                   padding: EdgeInsets.only(
                                       left: 12, right: 12, top: 8, bottom: 8),

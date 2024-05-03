@@ -22,8 +22,18 @@ class TimeRange {
   int get endMinute => _endMinute;
 
   String get startTime => "$_startHour:$_startMinute:00";
-
   String get endTime => "$_endHour:$_endMinute:00";
+
+  void updateTime(
+      {required int startHour,
+      int? startMinute,
+      int? endHour,
+      int? endMinute}) {
+    this._startHour = startHour;
+    this._startMinute = startMinute ?? 0;
+    this._endHour = endHour ?? startHour;
+    this._endMinute = endMinute ?? startMinute ?? 0;
+  }
 
   @override
   String toString() {

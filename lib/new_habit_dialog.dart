@@ -83,6 +83,14 @@ class _NewHabitDialogState extends State<NewHabitDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final dialogWidth = () {
+      var appWidth = MediaQuery.of(context).size.width;
+      if (appWidth >= 700)
+        return appWidth - 250;
+      else
+        return appWidth;
+    }();
+
     final entriesList = uiEntries.items.map((recurrance_pair) {
       var list = weekdayDropdownItems.where((element) {
         for (final pair in uiEntries.items) {
@@ -194,9 +202,7 @@ class _NewHabitDialogState extends State<NewHabitDialog> {
       content: Center(
         child: SizedBox(
           // TODO add animation to this dynamic sizing
-          width: MediaQuery.of(context).size.width >= 700
-              ? MediaQuery.of(context).size.width - 400
-              : MediaQuery.of(context).size.width,
+          width: dialogWidth,
           child: Column(
             children: [
               TextField(

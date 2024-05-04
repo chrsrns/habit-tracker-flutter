@@ -91,63 +91,137 @@ class _NewHabitDialogState extends State<NewHabitDialog> {
         return appWidth;
     }();
 
-    final entriesList = uiEntries.items.map((recurrance_pair) {
-      var list = weekdayDropdownItems.where((element) {
-        for (final pair in uiEntries.items) {
-          if (recurrance_pair.weekday == element.value) return true;
-          if (pair.weekday == element.value) return false;
-        }
-        return true;
-      }).toList();
-      return Container(
-        child: Row(
-          children: [
-            Expanded(
-              flex: 1,
-              child: DropdownButton(
-                hint: Text("Select weekday"),
-                items: list,
-                value: recurrance_pair.weekday,
-                onChanged: (value) {
-                  if (value is Weekday)
-                    setState(() {
-                      uiEntries.updateWeekdayOfPair(recurrance_pair, value);
-                    });
-                },
+    final entriesList = (BuildContext ctx) {
+      return uiEntries.items.map((recurrance_pair) {
+        var list = weekdayDropdownItems.where((element) {
+          for (final pair in uiEntries.items) {
+            if (recurrance_pair.weekday == element.value) return true;
+            if (pair.weekday == element.value) return false;
+          }
+          return true;
+        }).toList();
+        return Container(
+          child: Row(
+            children: [
+              Expanded(
+                flex: 1,
+                child: DropdownButton(
+                  hint: Text("Select weekday"),
+                  items: list,
+                  value: recurrance_pair.weekday,
+                  onChanged: (value) {
+                    if (value is Weekday)
+                      setState(() {
+                        uiEntries.updateWeekdayOfPair(recurrance_pair, value);
+                      });
+                  },
+                ),
               ),
-            ),
-            Expanded(
-              flex: 1,
-              child: Column(
-                children: [
-                  ...recurrance_pair.timeranges.map((e) => Container(
-                        margin: EdgeInsets.only(top: 8.0, bottom: 8.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            ElevatedButton(
-                                onPressed: () {
-                                  updateTimeRange(context, e, recurrance_pair);
-                                },
-                                child: Container(
-                                  padding: EdgeInsets.only(
-                                      left: 12, right: 12, top: 8, bottom: 8),
+              Expanded(
+                flex: 1,
+                child: Column(
+                  children: [
+                    ...recurrance_pair.timeranges.map((e) => Container(
+                          margin: EdgeInsets.only(top: 8.0, bottom: 8.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              ElevatedButton(
+                                  onPressed: () {
+                                    updateTimeRange(
+                                        context, e, recurrance_pair);
+                                  },
                                   child: Container(
-                                    height: 20,
-                                    child: Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        Text("${e.startTime}"),
-                                        VerticalDivider(),
-                                        Text("${e.endTime}")
-                                      ],
+                                    padding: EdgeInsets.only(
+                                        left: 12, right: 12, top: 8, bottom: 8),
+                                    child: Container(
+                                      height: 20,
+                                      child: Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          Text("${e.startTime}"),
+                                          VerticalDivider(),
+                                          Text("${e.endTime}")
+                                        ],
+                                      ),
                                     ),
-                                  ),
-                                )),
-                          ],
+                                  )),
+                            ],
+                          ),
+                        )),
+                    ElevatedButton(
+                        onPressed: () {
+                          if (recurrance_pair.weekday == null) {
+                            ScaffoldMessenger.of(ctx).showSnackBar(
+                              SnackBar(
+                                content: const Text(
+                                    'Select weekday on the left first'),
+                                duration: const Duration(seconds: 3),
+                                action: SnackBarAction(
+                                  label: 'ACTION',
+                                  onPressed: () {},
+                                ),
+                              ),
+                            );
+                          } else
+                            showTimeRangePickers(context, recurrance_pair);
+                        },
+                        child: Text("Add new time..."))
+                  ],
+                ),
+              ),
+              Divider()
+            ],
+          ),
+        );
+      }).toList();
+    };
+    return ScaffoldMessenger(
+      child: Builder(
+        builder: (context) => Scaffold(
+          backgroundColor: Colors.transparent,
+          body: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () => Navigator.of(context).pop(),
+            child: GestureDetector(
+              onTap: () {},
+              child: AlertDialog(
+                title: Text("Create New Habit"),
+                content: Center(
+                  child: SizedBox(
+                    // TODO add animation to this dynamic sizing
+                    width: dialogWidth,
+                    child: Column(
+                      children: [
+                        TextField(
+                          decoration: InputDecoration(
+                            border: OutlineInputBorder(),
+                            hintText: 'Name of new habit',
+                          ),
                         ),
-                      )),
+                        SizedBox(height: 8),
+                        Divider(),
+                        (BuildContext context) {
+                          // TODO rename
+                          final list = entriesList(context);
+                          return Expanded(
+                            child: ListView.separated(
+                              scrollDirection: Axis.vertical,
+                              shrinkWrap: true,
+                              itemCount: list.length,
+                              itemBuilder: (context, index) {
+                                return list[index];
+                              },
+                              separatorBuilder: (context, index) => Divider(),
+                            ),
+                          );
+                        }(context),
+                      ],
+                    ),
+                  ),
+                ),
+                actions: [
                   ElevatedButton(
                       onPressed: () {
                         if (recurrance_pair.weekday == null) {
@@ -158,61 +232,9 @@ class _NewHabitDialogState extends State<NewHabitDialog> {
                 ],
               ),
             ),
-            Divider()
-          ],
-        ),
-      );
-    }).toList();
-    return AlertDialog(
-      title: Text("Create New Habit"),
-      content: Center(
-        child: SizedBox(
-          // TODO add animation to this dynamic sizing
-          width: dialogWidth,
-          child: Column(
-            children: [
-              TextField(
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  hintText: 'Name of new habit',
-                ),
-              ),
-              SizedBox(height: 8),
-              Divider(),
-              Expanded(
-                child: ListView.separated(
-                  scrollDirection: Axis.vertical,
-                  shrinkWrap: true,
-                  itemCount: entriesList.length,
-                  itemBuilder: (context, index) {
-                    return entriesList[index];
-                  },
-                  separatorBuilder: (context, index) => Divider(),
-                ),
-              )
-            ],
           ),
         ),
       ),
-      actions: [
-        ElevatedButton(
-            onPressed: () {
-              int weekdayInt = Random().nextInt(7);
-              Weekday weekday = Weekday.values[weekdayInt];
-
-              TimeRange trange = TimeRange(
-                  startHour: Random().nextInt(23),
-                  endHour: Random().nextInt(23));
-
-              final pair = _MutableRecurrancePair();
-              // pair.timeranges.add(trange);
-
-              setState(() {
-                uiEntries.add(pair);
-              });
-            },
-            child: Text("Add new button"))
-      ],
     );
   }
 

@@ -127,41 +127,7 @@ class _NewHabitDialogState extends State<NewHabitDialog> {
                           children: [
                             ElevatedButton(
                                 onPressed: () {
-                                  final timePicker = showTimePicker(
-                                      context: context,
-                                      helpText:
-                                          "What is the starting time of this habit?",
-                                      initialTime: TimeOfDay(
-                                          hour: e.startHour,
-                                          minute: e.startMinute),
-                                      initialEntryMode:
-                                          TimePickerEntryMode.dialOnly);
-                                  timePicker.then((startTime) {
-                                    if (startTime != null) {
-                                      final startHour = startTime.hour;
-                                      final startMinute = startTime.minute;
-                                      final endTimePicker = showTimePicker(
-                                          context: context,
-                                          helpText:
-                                              "What is the ending time of this habit?",
-                                          initialTime: TimeOfDay(
-                                              hour: e.endHour,
-                                              minute: e.endMinute));
-                                      endTimePicker.then((endTime) {
-                                        if (endTime != null) {
-                                          setState(() {
-                                            var endHour = endTime.hour;
-                                            var endMinute = endTime.minute;
-                                            e.updateTime(
-                                                startHour: startHour,
-                                                startMinute: startMinute,
-                                                endHour: endHour,
-                                                endMinute: endMinute);
-                                          });
-                                        }
-                                      });
-                                    }
-                                  });
+                                  updateTimeRange(context, e, recurrance_pair);
                                 },
                                 child: Container(
                                   padding: EdgeInsets.only(
@@ -248,6 +214,41 @@ class _NewHabitDialogState extends State<NewHabitDialog> {
             child: Text("Add new button"))
       ],
     );
+  }
+
+  void updateTimeRange(BuildContext context, TimeRange e,
+      _MutableRecurrancePair recurrance_pair) {
+    final timePicker = showTimePicker(
+        context: context,
+        helpText: "What is the starting time of this habit?",
+        initialTime: TimeOfDay(hour: e.startHour, minute: e.startMinute),
+        initialEntryMode: TimePickerEntryMode.dialOnly);
+    timePicker.then((startTime) {
+      if (startTime != null) {
+        final startHour = startTime.hour;
+        final startMinute = startTime.minute;
+        final endTimePicker = showTimePicker(
+            context: context,
+            helpText: "What is the ending time of this habit?",
+            initialTime: TimeOfDay(hour: e.endHour, minute: e.endMinute));
+        endTimePicker.then((endTime) {
+          if (endTime != null) {
+            setState(() {
+              var endHour = endTime.hour;
+              var endMinute = endTime.minute;
+              final indexOf = recurrance_pair.timeranges.indexOf(e);
+              recurrance_pair.timeranges.replaceRange(indexOf, indexOf + 1, [
+                TimeRange(
+                    startHour: startHour,
+                    startMinute: startMinute,
+                    endHour: endHour,
+                    endMinute: endMinute)
+              ]);
+            });
+          }
+        });
+      }
+    });
   }
 
   void showTimeRangePickers(

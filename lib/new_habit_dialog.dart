@@ -100,6 +100,52 @@ class _NewHabitDialogState extends State<NewHabitDialog> {
           }
           return true;
         }).toList();
+        var timeRangesAsButtons = [
+          ...recurrance_pair.timeranges.map((e) => Container(
+                margin: EdgeInsets.only(top: 8.0, bottom: 8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ElevatedButton(
+                        onPressed: () {
+                          updateTimeRange(context, e, recurrance_pair);
+                        },
+                        child: Container(
+                          padding: EdgeInsets.only(
+                              left: 12, right: 12, top: 8, bottom: 8),
+                          child: Container(
+                            height: 20,
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Text("${e.startTime}"),
+                                VerticalDivider(),
+                                Text("${e.endTime}")
+                              ],
+                            ),
+                          ),
+                        )),
+                  ],
+                ),
+              )),
+          ElevatedButton(
+              onPressed: () {
+                if (recurrance_pair.weekday == null) {
+                  ScaffoldMessenger.of(ctx).showSnackBar(
+                    SnackBar(
+                      content: const Text('Select weekday on the left first'),
+                      duration: const Duration(seconds: 3),
+                      action: SnackBarAction(
+                        label: 'ACTION',
+                        onPressed: () {},
+                      ),
+                    ),
+                  );
+                } else
+                  showTimeRangePickers(context, recurrance_pair);
+              },
+              child: Text("Add new time..."))
+        ];
         return Container(
           child: Row(
             children: [
@@ -120,55 +166,7 @@ class _NewHabitDialogState extends State<NewHabitDialog> {
               Expanded(
                 flex: 1,
                 child: Column(
-                  children: [
-                    ...recurrance_pair.timeranges.map((e) => Container(
-                          margin: EdgeInsets.only(top: 8.0, bottom: 8.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              ElevatedButton(
-                                  onPressed: () {
-                                    updateTimeRange(
-                                        context, e, recurrance_pair);
-                                  },
-                                  child: Container(
-                                    padding: EdgeInsets.only(
-                                        left: 12, right: 12, top: 8, bottom: 8),
-                                    child: Container(
-                                      height: 20,
-                                      child: Row(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: [
-                                          Text("${e.startTime}"),
-                                          VerticalDivider(),
-                                          Text("${e.endTime}")
-                                        ],
-                                      ),
-                                    ),
-                                  )),
-                            ],
-                          ),
-                        )),
-                    ElevatedButton(
-                        onPressed: () {
-                          if (recurrance_pair.weekday == null) {
-                            ScaffoldMessenger.of(ctx).showSnackBar(
-                              SnackBar(
-                                content: const Text(
-                                    'Select weekday on the left first'),
-                                duration: const Duration(seconds: 3),
-                                action: SnackBarAction(
-                                  label: 'ACTION',
-                                  onPressed: () {},
-                                ),
-                              ),
-                            );
-                          } else
-                            showTimeRangePickers(context, recurrance_pair);
-                        },
-                        child: Text("Add new time..."))
-                  ],
+                  children: timeRangesAsButtons,
                 ),
               ),
               Divider()

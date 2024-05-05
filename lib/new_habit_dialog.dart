@@ -251,58 +251,67 @@ class _NewHabitDialogState extends State<NewHabitDialog> {
                   ),
                 ),
                 actions: [
-                  TextButton(
-                      onPressed: () {
-                        Navigator.of(context, rootNavigator: true).pop();
-                      },
-                      child: const Text("Cancel")),
-                  FilledButton.tonal(
-                      onPressed: () {
-                        final pair = _MutableRecurrancePair();
-                        setState(() {
-                          uiEntries.add(pair);
-                        });
-                      },
-                      child: Text("Add another week")),
-                  FilledButton(
-                      onPressed: () {
-                        if (habitNameController.text.isEmpty) {
-                          ScaffoldMessenger.of(scaffoldMessengerCtx)
-                              .showSnackBar(
-                            SnackBar(
-                              content:
-                                  const Text('Fill up the habit name first'),
-                              duration: const Duration(seconds: 3),
-                            ),
-                          );
-                          return;
-                        }
-
-                        var map = Map<int, List<TimeRange>>();
-                        for (var recurranceItem in uiEntries.items) {
-                          final weekday = recurranceItem.weekday;
-                          if (weekday != null)
-                            map[weekday.index] = recurranceItem.timeranges;
-                        }
-                        print(map);
-                        var deleteFirst = () {
-                          var habit = _habit;
-                          if (habit != null) {
-                            return DatabaseHelper.deleteHabit(habit);
-                          } else
-                            return Future.value();
-                        }();
-                        deleteFirst.then((_) {
-                          DatabaseHelper.insertHabit(
-                            Habit(
-                                name: habitNameController.text,
-                                recurrances: map),
-                          );
-                        }).whenComplete(() {
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4),
+                    child: TextButton(
+                        onPressed: () {
                           Navigator.of(context, rootNavigator: true).pop();
-                        });
-                      },
-                      child: Text(_habit == null ? "Create" : "Modify"))
+                        },
+                        child: const Text("Cancel")),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4),
+                    child: FilledButton.tonal(
+                        onPressed: () {
+                          final pair = _MutableRecurrancePair();
+                          setState(() {
+                            uiEntries.add(pair);
+                          });
+                        },
+                        child: Text("Add another week")),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4),
+                    child: FilledButton(
+                        onPressed: () {
+                          if (habitNameController.text.isEmpty) {
+                            ScaffoldMessenger.of(scaffoldMessengerCtx)
+                                .showSnackBar(
+                              SnackBar(
+                                content:
+                                    const Text('Fill up the habit name first'),
+                                duration: const Duration(seconds: 3),
+                              ),
+                            );
+                            return;
+                          }
+
+                          var map = Map<int, List<TimeRange>>();
+                          for (var recurranceItem in uiEntries.items) {
+                            final weekday = recurranceItem.weekday;
+                            if (weekday != null)
+                              map[weekday.index] = recurranceItem.timeranges;
+                          }
+                          print(map);
+                          var deleteFirst = () {
+                            var habit = _habit;
+                            if (habit != null) {
+                              return DatabaseHelper.deleteHabit(habit);
+                            } else
+                              return Future.value();
+                          }();
+                          deleteFirst.then((_) {
+                            DatabaseHelper.insertHabit(
+                              Habit(
+                                  name: habitNameController.text,
+                                  recurrances: map),
+                            );
+                          }).whenComplete(() {
+                            Navigator.of(context, rootNavigator: true).pop();
+                          });
+                        },
+                        child: Text(_habit == null ? "Create" : "Modify")),
+                  )
                 ],
               ),
             ),

@@ -232,6 +232,11 @@ class _NewHabitDialogState extends State<NewHabitDialog> {
                   ),
                 ),
                 actions: [
+                  TextButton(
+                      onPressed: () {
+                        Navigator.of(context, rootNavigator: true).pop();
+                      },
+                      child: const Text("Cancel")),
                   FilledButton.tonal(
                       onPressed: () {
                         final pair = _MutableRecurrancePair();

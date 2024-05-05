@@ -286,8 +286,9 @@ class _NewHabitDialogState extends State<NewHabitDialog> {
                         }
                         print(map);
                         var deleteFirst = () {
-                          if (_habit != null) {
-                            return DatabaseHelper.deleteHabit(_habit!);
+                          var habit = _habit;
+                          if (habit != null) {
+                            return DatabaseHelper.deleteHabit(habit);
                           } else
                             return Future.value();
                         }();

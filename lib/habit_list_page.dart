@@ -46,8 +46,6 @@ class _HabitListPageState extends State<HabitListPage> {
   Widget build(BuildContext context) {
     void deleteHabit(String habit) {
       setState(() {
-        _isLoading = true;
-        print(_isLoading);
         DatabaseHelper.deleteHabitByName(habit);
       });
     }

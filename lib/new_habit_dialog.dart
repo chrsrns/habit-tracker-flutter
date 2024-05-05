@@ -79,7 +79,16 @@ class _NewHabitDialogState extends State<NewHabitDialog> {
     return menuItems;
   }
 
+  final habitNameController = TextEditingController();
   final uiEntries = _RecurrancePairList();
+
+  @override
+  void dispose() {
+    // Clean up the controller when the widget is removed from the
+    // widget tree.
+    habitNameController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -197,6 +206,7 @@ class _NewHabitDialogState extends State<NewHabitDialog> {
                             border: OutlineInputBorder(),
                             hintText: 'Name of new habit',
                           ),
+                          controller: habitNameController,
                         ),
                         SizedBox(height: 8),
                         Divider(),

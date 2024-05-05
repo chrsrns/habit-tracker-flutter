@@ -58,15 +58,19 @@ class _RecurrancePairList {
 }
 
 class NewHabitDialog extends StatefulWidget {
-  const NewHabitDialog({super.key});
+  final Habit? habit;
+  NewHabitDialog({super.key, this.habit}) {
+    print("Selected Habit: ${habit?.name}");
+  }
 
   @override
-  State<NewHabitDialog> createState() => _NewHabitDialogState();
+  State<NewHabitDialog> createState() => _NewHabitDialogState(habit);
 }
 
 class _NewHabitDialogState extends State<NewHabitDialog> {
   Map<Weekday, List<TimeRange>> recurrances = {};
   Map<Weekday, TextEditingController> controllers = {};
+  final Habit? _habit;
 
   List<DropdownMenuItem<Weekday>> get weekdayDropdownItems {
     List<DropdownMenuItem<Weekday>> menuItems = [
@@ -83,6 +87,19 @@ class _NewHabitDialogState extends State<NewHabitDialog> {
 
   final habitNameController = TextEditingController();
   final uiEntries = _RecurrancePairList();
+
+  _NewHabitDialogState(this._habit) {
+    final habit = _habit;
+
+    if (habit != null) {
+      habitNameController.text = habit.name;
+      for (var recurrance in habit.recurrances.keys) {
+        uiEntries.add(_MutableRecurrancePair(
+            weekday: Weekday.values[recurrance],
+            timeranges: habit.recurrances[recurrance]));
+      }
+    }
+  }
 
   @override
   void dispose() {
@@ -197,7 +214,9 @@ class _NewHabitDialogState extends State<NewHabitDialog> {
             child: GestureDetector(
               onTap: () {},
               child: AlertDialog(
-                title: Text("Create New Habit"),
+                title: Text(_habit == null
+                    ? "Create New Habit"
+                    : "Modifying this Habit"),
                 content: Center(
                   child: SizedBox(
                     // TODO add animation to this dynamic sizing
@@ -259,6 +278,7 @@ class _NewHabitDialogState extends State<NewHabitDialog> {
                           );
                           return;
                         }
+
                         var map = Map<int, List<TimeRange>>();
                         for (var recurranceItem in uiEntries.items) {
                           final weekday = recurranceItem.weekday;
@@ -266,13 +286,23 @@ class _NewHabitDialogState extends State<NewHabitDialog> {
                             map[weekday.index] = recurranceItem.timeranges;
                         }
                         print(map);
-                        DatabaseHelper.insertHabit(
-                          Habit(
-                              name: habitNameController.text, recurrances: map),
-                        );
-                        Navigator.of(context, rootNavigator: true).pop();
+                        var deleteFirst = () {
+                          if (_habit != null) {
+                            return DatabaseHelper.deleteHabit(_habit!);
+                          } else
+                            return Future.value();
+                        }();
+                        deleteFirst.then((value) {
+                          DatabaseHelper.insertHabit(
+                            Habit(
+                                name: habitNameController.text,
+                                recurrances: map),
+                          );
+                        }).whenComplete(() {
+                          Navigator.of(context, rootNavigator: true).pop();
+                        });
                       },
-                      child: Text("Create"))
+                      child: Text(_habit == null ? "Create" : "Modify"))
                 ],
               ),
             ),

@@ -27,6 +27,18 @@ class _HabitListPageState extends State<HabitListPage> {
               _isLoading = false;
               print(_isLoading);
             }));
+
+    DatabaseHelper.updates.then((value) => value
+      ..listen((event) {
+        setState(() {
+          _habitData = Future.delayed(
+                  Duration(seconds: 0), (() => DatabaseHelper.retrieveHabits()))
+              .whenComplete(() => setState(() {
+                    _isLoading = false;
+                    print(_isLoading);
+                  }));
+        });
+      }));
   }
 
   @override

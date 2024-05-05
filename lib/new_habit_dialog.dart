@@ -232,11 +232,12 @@ class _NewHabitDialogState extends State<NewHabitDialog> {
                 actions: [
                   ElevatedButton(
                       onPressed: () {
-                        if (recurrance_pair.weekday == null) {
-                        } else
-                          showTimeRangePickers(context, recurrance_pair);
+                        final pair = _MutableRecurrancePair();
+                        setState(() {
+                          uiEntries.add(pair);
+                        });
                       },
-                      child: Text("Add new time..."))
+                      child: Text("Add another week")),
                 ],
               ),
             ),

@@ -182,10 +182,11 @@ class _NewHabitDialogState extends State<NewHabitDialog> {
                   hint: Text("Select weekday"),
                   items: list,
                   value: recurrance_pair.weekday,
-                  onChanged: (value) {
-                    if (value is Weekday)
+                  onChanged: (dropdownValue) {
+                    if (dropdownValue is Weekday)
                       setState(() {
-                        uiEntries.updateWeekdayOfPair(recurrance_pair, value);
+                        uiEntries.updateWeekdayOfPair(
+                            recurrance_pair, dropdownValue);
                       });
                   },
                 ),
@@ -290,7 +291,7 @@ class _NewHabitDialogState extends State<NewHabitDialog> {
                           } else
                             return Future.value();
                         }();
-                        deleteFirst.then((value) {
+                        deleteFirst.then((_) {
                           DatabaseHelper.insertHabit(
                             Habit(
                                 name: habitNameController.text,

@@ -119,7 +119,7 @@ class _HabitListPageState extends State<HabitListPage> {
     var result;
     if (data != null)
       result = <Widget>[
-        ...data.map((e) {
+        ...data.map((habitRow) {
           final buttonStyle = ButtonStyle(
               backgroundColor: MaterialStateProperty.all(Colors.white),
               shape: MaterialStateProperty.all<RoundedRectangleBorder>(
@@ -131,12 +131,12 @@ class _HabitListPageState extends State<HabitListPage> {
               IconButton(
                 style: buttonStyle,
                 onPressed: () {
-                  DatabaseHelper.retrieveHabit(e['name']).then((value) {
-                    if (value != null) {
+                  DatabaseHelper.retrieveHabit(habitRow['name']).then((habit) {
+                    if (habit != null) {
                       showDialog(
                           context: context,
                           builder: (BuildContext context) {
-                            return NewHabitDialog(habit: value);
+                            return NewHabitDialog(habit: habit);
                           });
                     }
                   });
@@ -148,7 +148,7 @@ class _HabitListPageState extends State<HabitListPage> {
               ),
               IconButton(
                 style: buttonStyle,
-                onPressed: () => deleteHabit(e['name']),
+                onPressed: () => deleteHabit(habitRow['name']),
                 icon: Icon(Icons.delete_forever),
               )
             ],
@@ -160,7 +160,7 @@ class _HabitListPageState extends State<HabitListPage> {
               child: ListTile(
                   // tileColor:
                   //     Theme.of(context).colorScheme.secondaryContainer,
-                  title: Text(e['name']),
+                  title: Text(habitRow['name']),
                   trailing: trailingButtonRow),
             ),
           );

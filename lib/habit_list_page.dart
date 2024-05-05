@@ -57,11 +57,13 @@ class _HabitListPageState extends State<HabitListPage> {
       child: Column(
         children: [
           Container(
+            padding: EdgeInsets.only(bottom: 8.0),
             child: Text(
               "Your current habits",
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
             ),
           ),
+          Divider(),
           FutureBuilder<sqlite.ResultSet>(
             future: _habitData,
             builder: (BuildContext context,

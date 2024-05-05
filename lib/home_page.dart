@@ -136,70 +136,7 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
 
-    // TODO remove at some point
-    () async {
-      await DatabaseHelper.insertHabit(
-        Habit(name: 'Exercise', recurrances: {
-          1: [
-            TimeRange(startHour: 21, startMinute: 10),
-            TimeRange(startHour: 7, startMinute: 55)
-          ],
-        }),
-      );
-      await DatabaseHelper.insertHabit(
-        Habit(name: 'Write one code commit', recurrances: {
-          1: [
-            TimeRange(startHour: 20, startMinute: 10),
-            TimeRange(startHour: 8, startMinute: 55)
-          ],
-        }),
-      );
-      await DatabaseHelper.insertHabit(
-        Habit(name: 'Finish one lesson', recurrances: {
-          1: [TimeRange(startHour: 12)],
-          5: [
-            TimeRange(startHour: 10, endHour: 10),
-            TimeRange(startHour: 16, endHour: 16)
-          ]
-        }),
-      );
-      await DatabaseHelper.insertHabit(
-        Habit(name: 'Write one Obsidian entry', recurrances: {
-          1: [
-            TimeRange(startHour: 21, startMinute: 10),
-            TimeRange(startHour: 7, startMinute: 55)
-          ],
-          2: [
-            TimeRange(startHour: 21, startMinute: 10),
-            TimeRange(startHour: 7, startMinute: 55)
-          ],
-          3: [
-            TimeRange(startHour: 21, startMinute: 10),
-            TimeRange(startHour: 7, startMinute: 55)
-          ],
-          4: [
-            TimeRange(startHour: 21, startMinute: 10),
-            TimeRange(startHour: 7, startMinute: 55)
-          ],
-          5: [
-            TimeRange(startHour: 21, startMinute: 10),
-            TimeRange(startHour: 7, startMinute: 55)
-          ],
-        }),
-      );
-      await DatabaseHelper.insertHabit(
-        Habit(
-          name: 'Be the best',
-        ),
-      );
-      print('retrieve habits');
-      await DatabaseHelper.retrieveHabits();
 
-      print('retrieve obsidian habit');
-      await DatabaseHelper.retrieveHabit('Write one Obsidian entry');
-      await DatabaseHelper.retrieveHabit('Be the best');
-      await DatabaseHelper.retrieveHabit('Warcrime');
-    }();
   }
 
   @override

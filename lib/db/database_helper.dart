@@ -16,6 +16,11 @@ class DatabaseHelper {
     return;
   }
 
+  static Future<Stream<SqliteUpdate>> get updates async {
+    final db = await _db;
+    return db.updates;
+  }
+
   static Future<int> insertHabit(Habit habit) async {
     final db = await _db;
 

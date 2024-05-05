@@ -93,16 +93,16 @@ class _NewHabitDialogState extends State<NewHabitDialog> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext buildctx) {
     final dialogWidth = () {
-      var appWidth = MediaQuery.of(context).size.width;
+      var appWidth = MediaQuery.of(buildctx).size.width;
       if (appWidth >= 700)
         return appWidth - 250;
       else
         return appWidth;
     }();
 
-    final entriesList = (BuildContext ctx) {
+    final getEntriesList = (BuildContext ctx) {
       return uiEntries.items.map((recurrance_pair) {
         var list = weekdayDropdownItems.where((element) {
           for (final pair in uiEntries.items) {
@@ -119,7 +119,7 @@ class _NewHabitDialogState extends State<NewHabitDialog> {
                   children: [
                     ElevatedButton(
                         onPressed: () {
-                          updateTimeRange(context, e, recurrance_pair);
+                          updateTimeRange(buildctx, e, recurrance_pair);
                         },
                         child: Container(
                           padding: EdgeInsets.only(
@@ -153,7 +153,7 @@ class _NewHabitDialogState extends State<NewHabitDialog> {
                     ),
                   );
                 } else
-                  showTimeRangePickers(context, recurrance_pair);
+                  showTimeRangePickers(buildctx, recurrance_pair);
               },
               child: Text("Add new time..."))
         ];
@@ -188,11 +188,11 @@ class _NewHabitDialogState extends State<NewHabitDialog> {
     };
     return ScaffoldMessenger(
       child: Builder(
-        builder: (context) => Scaffold(
+        builder: (scaffoldMessengerCtx) => Scaffold(
           backgroundColor: Colors.transparent,
           body: GestureDetector(
             behavior: HitTestBehavior.opaque,
-            onTap: () => Navigator.of(context).pop(),
+            onTap: () => Navigator.of(scaffoldMessengerCtx).pop(),
             child: GestureDetector(
               onTap: () {},
               child: AlertDialog(
@@ -214,19 +214,19 @@ class _NewHabitDialogState extends State<NewHabitDialog> {
                         Divider(),
                         (BuildContext context) {
                           // TODO rename
-                          final list = entriesList(context);
+                          final entriesList = getEntriesList(context);
                           return Expanded(
                             child: ListView.separated(
                               scrollDirection: Axis.vertical,
                               shrinkWrap: true,
-                              itemCount: list.length,
+                              itemCount: entriesList.length,
                               itemBuilder: (context, index) {
-                                return list[index];
+                                return entriesList[index];
                               },
                               separatorBuilder: (context, index) => Divider(),
                             ),
                           );
-                        }(context),
+                        }(scaffoldMessengerCtx),
                       ],
                     ),
                   ),

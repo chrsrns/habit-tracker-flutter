@@ -68,8 +68,6 @@ class NewHabitDialog extends StatefulWidget {
 }
 
 class _NewHabitDialogState extends State<NewHabitDialog> {
-  Map<Weekday, List<TimeRange>> recurrances = {};
-  Map<Weekday, TextEditingController> controllers = {};
   final Habit? _habit;
 
   List<DropdownMenuItem<Weekday>> get weekdayDropdownItems {

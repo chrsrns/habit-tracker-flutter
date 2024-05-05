@@ -1,5 +1,7 @@
 import 'dart:math';
 
+import 'package:cohabit/db/database_helper.dart';
+import 'package:cohabit/db/db_habit.dart';
 import 'package:cohabit/db/db_time_range.dart';
 import 'package:cohabit/db/weekdays_enum.dart';
 import 'package:flutter/material.dart';
@@ -238,6 +240,33 @@ class _NewHabitDialogState extends State<NewHabitDialog> {
                         });
                       },
                       child: Text("Add another week")),
+                  ElevatedButton(
+                      onPressed: () {
+                        if (habitNameController.text.isEmpty) {
+                          ScaffoldMessenger.of(scaffoldMessengerCtx)
+                              .showSnackBar(
+                            SnackBar(
+                              content:
+                                  const Text('Fill up the habit name first'),
+                              duration: const Duration(seconds: 3),
+                            ),
+                          );
+                          return;
+                        }
+                        var map = Map<int, List<TimeRange>>();
+                        for (var recurranceItem in uiEntries.items) {
+                          final weekday = recurranceItem.weekday;
+                          if (weekday != null)
+                            map[weekday.index] = recurranceItem.timeranges;
+                        }
+                        print(map);
+                        DatabaseHelper.insertHabit(
+                          Habit(
+                              name: habitNameController.text, recurrances: map),
+                        );
+                        Navigator.of(context, rootNavigator: true).pop();
+                      },
+                      child: Text("Create"))
                 ],
               ),
             ),

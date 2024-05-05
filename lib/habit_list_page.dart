@@ -1,3 +1,4 @@
+import 'package:cohabit/new_habit_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/material.dart' as material;
 import 'package:sqlite3/common.dart' as sqlite;
@@ -125,6 +126,24 @@ class _HabitListPageState extends State<HabitListPage> {
           final trailingButtonRow = material.Row(
             mainAxisSize: MainAxisSize.min,
             children: [
+              IconButton(
+                style: buttonStyle,
+                onPressed: () {
+                  DatabaseHelper.retrieveHabit(e['name']).then((value) {
+                    if (value != null) {
+                      showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return NewHabitDialog(habit: value);
+                          });
+                    }
+                  });
+                },
+                icon: Icon(Icons.edit),
+              ),
+              SizedBox(
+                width: 8,
+              ),
               IconButton(
                 style: buttonStyle,
                 onPressed: () => deleteHabit(e['name']),

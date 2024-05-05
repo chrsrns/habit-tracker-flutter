@@ -163,6 +163,7 @@ class _NewHabitDialogState extends State<NewHabitDialog> {
               Expanded(
                 flex: 1,
                 child: DropdownButton(
+                  padding: EdgeInsets.only(left: 8, right: 8),
                   hint: Text("Select weekday"),
                   items: list,
                   value: recurrance_pair.weekday,

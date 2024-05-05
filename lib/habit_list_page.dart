@@ -48,13 +48,6 @@ class _HabitListPageState extends State<HabitListPage> {
         _isLoading = true;
         print(_isLoading);
         DatabaseHelper.deleteHabitByName(habit);
-        // TODO remove delay at some point
-        _habitData = Future.delayed(
-                Duration(seconds: 0), (() => DatabaseHelper.retrieveHabits()))
-            .whenComplete(() => setState(() {
-                  _isLoading = false;
-                  print(_isLoading);
-                }));
       });
     }
 

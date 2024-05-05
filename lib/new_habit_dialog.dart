@@ -232,7 +232,7 @@ class _NewHabitDialogState extends State<NewHabitDialog> {
                   ),
                 ),
                 actions: [
-                  ElevatedButton(
+                  FilledButton.tonal(
                       onPressed: () {
                         final pair = _MutableRecurrancePair();
                         setState(() {
@@ -240,7 +240,7 @@ class _NewHabitDialogState extends State<NewHabitDialog> {
                         });
                       },
                       child: Text("Add another week")),
-                  ElevatedButton(
+                  FilledButton(
                       onPressed: () {
                         if (habitNameController.text.isEmpty) {
                           ScaffoldMessenger.of(scaffoldMessengerCtx)

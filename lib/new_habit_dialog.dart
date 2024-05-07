@@ -4,6 +4,7 @@ import 'package:cohabit/db/database_helper.dart';
 import 'package:cohabit/db/db_habit.dart';
 import 'package:cohabit/db/db_time_range.dart';
 import 'package:cohabit/db/weekdays_enum.dart';
+import 'package:flex_list/flex_list.dart';
 import 'package:flutter/material.dart';
 
 class _MutableRecurrancePair {
@@ -173,10 +174,9 @@ class _NewHabitDialogState extends State<NewHabitDialog> {
               child: Text("Add new time..."))
         ];
         return Container(
-          child: Row(
+          child: FlexList(
             children: [
-              Expanded(
-                flex: 1,
+              IntrinsicWidth(
                 child: DropdownButton(
                   padding: EdgeInsets.only(left: 8, right: 8),
                   hint: Text("Select weekday"),
@@ -191,13 +191,11 @@ class _NewHabitDialogState extends State<NewHabitDialog> {
                   },
                 ),
               ),
-              Expanded(
-                flex: 1,
+              IntrinsicWidth(
                 child: Column(
                   children: timeRangesAsButtons,
                 ),
               ),
-              Divider()
             ],
           ),
         );

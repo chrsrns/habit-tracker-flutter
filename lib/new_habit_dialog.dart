@@ -145,9 +145,14 @@ class _NewHabitDialogState extends State<NewHabitDialog> {
                             child: Row(
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                Text("${e.startTime}"),
+                                Text(TimeOfDay(
+                                        hour: e.startHour,
+                                        minute: e.startMinute)
+                                    .format(context)),
                                 VerticalDivider(),
-                                Text("${e.endTime}")
+                                Text(TimeOfDay(
+                                        hour: e.endHour, minute: e.endMinute)
+                                    .format(context))
                               ],
                             ),
                           ),

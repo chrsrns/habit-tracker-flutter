@@ -37,8 +37,34 @@ class DatabaseHelper {
 
       for (var time in times) {
         var sql = """
-            INSERT INTO recurrance(${TableRecurrance.weekday}, ${TableRecurrance.starttime}, ${TableRecurrance.endtime}) VALUES('$weekday', '${time.startTime}', '${time.endTime}') ON CONFLICT DO NOTHING;
-            INSERT INTO habit_recurrance(${TableHabitRecurrance.habit_fr}, ${TableHabitRecurrance.weekday_id_fr}, ${TableHabitRecurrance.starttime_id_fr}, ${TableHabitRecurrance.endtime_id_fr}) VALUES('${habit.name}','$weekday','${time.startTime}', '${time.endTime}') ON CONFLICT DO NOTHING;
+            INSERT INTO recurrance(
+              ${TableRecurrance.weekday}, 
+              ${TableRecurrance.start_hour}, 
+              ${TableRecurrance.start_minute}, 
+              ${TableRecurrance.end_hour},
+              ${TableRecurrance.end_minute}) 
+              VALUES(
+                '$weekday', 
+                '${time.startHour}',
+                '${time.startMinute}',
+                '${time.endHour}',
+                '${time.endMinute}')
+                ON CONFLICT DO NOTHING;
+            INSERT INTO habit_recurrance(
+              ${TableHabitRecurrance.habit_fr}, 
+              ${TableHabitRecurrance.weekday_id_fr}, 
+              ${TableHabitRecurrance.start_hour_fr}, 
+              ${TableHabitRecurrance.start_minute_fr}, 
+              ${TableHabitRecurrance.end_hour_fr}, 
+              ${TableHabitRecurrance.end_minute_fr}) 
+              VALUES(
+                '${habit.name}',
+                '$weekday',
+                '${time.startHour}', 
+                '${time.startMinute}', 
+                '${time.endHour}', 
+                '${time.endMinute}') 
+                ON CONFLICT DO NOTHING;
           """;
         print("[Executing insert SQL]");
         print(sql);
@@ -62,33 +88,36 @@ class DatabaseHelper {
     if (habitFromDb.length != 1) return null;
     final habit = Habit(name: name);
     for (final Row row in recurrancesFromDb) {
-      final int weekdayFromDb = row['weekday_id_fr'] ?? -1;
-      final rowStartTime = row[TableHabitRecurrance.starttime_id_fr.name] ?? '';
-      final rowEndTime = row[TableHabitRecurrance.endtime_id_fr.name] ?? '';
-      if (weekdayFromDb == -1 || rowStartTime == '' || rowEndTime == '') {
-        print(
-            "Invalid habit [wd: $weekdayFromDb, st: $rowStartTime, et: $rowEndTime]");
+      final int weekdayFromDb =
+          row['${TableHabitRecurrance.weekday_id_fr}'] ?? -1;
+      final getColVal = (String colName) {
+        final rowVal = row[colName];
+        if (rowVal is int)
+          return rowVal;
+        else
+          return -1;
+      };
+      final rowStartHour = getColVal('${TableHabitRecurrance.start_hour_fr}');
+      final rowStartMinute =
+          getColVal('${TableHabitRecurrance.start_minute_fr}');
+      final rowEndHour = getColVal('${TableHabitRecurrance.end_hour_fr}');
+      final rowEndMinute = getColVal('${TableHabitRecurrance.end_minute_fr}');
+      if (weekdayFromDb == -1 ||
+          rowStartHour == -1 ||
+          rowStartMinute == -1 ||
+          rowEndHour == -1 ||
+          rowEndMinute == -1) {
         continue;
       }
-
-      final start_time = rowStartTime.split(':');
-      final end_time = rowEndTime.split(':');
-
-      final start_hour = int.tryParse(start_time[0]) ?? -1;
-      final start_minute = int.tryParse(start_time[1]) ?? -1;
-
-      final end_hour = int.tryParse(end_time[0]) ?? -1;
-      final end_minute = int.tryParse(end_time[1]) ?? -1;
-
       if (!habit.recurrances.containsKey(weekdayFromDb))
         habit.recurrances[weekdayFromDb] = [];
 
       // TODO Shouldn't be null, but Dart safety checker says otherwise
       habit.recurrances[weekdayFromDb]?.add(TimeRange(
-        startHour: start_hour,
-        startMinute: start_minute,
-        endHour: end_hour,
-        endMinute: end_minute,
+        startHour: rowStartHour,
+        startMinute: rowStartMinute,
+        endHour: rowEndHour,
+        endMinute: rowEndMinute,
       ));
     }
 

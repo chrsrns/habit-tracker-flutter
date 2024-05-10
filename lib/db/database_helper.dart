@@ -149,4 +149,61 @@ class DatabaseHelper {
 
     db.execute("DELETE FROM habits WHERE name='${habit}'");
   }
+
+  // TODO current implementation only checks upcoming habit for the current week. Should be changed.
+  static Future<Habit?> get upcomingHabit async {
+    final db = await _db;
+    final currentTime = DateTime.now();
+
+    var sql = '''
+      SELECT *
+        FROM habit_recurrance
+        WHERE ${TableHabitRecurrance.weekday_id_fr} >= ${currentTime.weekday} 
+        AND ${TableHabitRecurrance.start_hour_fr} >= ${currentTime.hour} 
+        ORDER BY ${TableHabitRecurrance.weekday_id_fr} ASC,
+          ${TableHabitRecurrance.start_hour_fr} ASC,
+          ${TableHabitRecurrance.start_minute_fr} ASC
+        LIMIT 1;
+    ''';
+    print(sql);
+    var upcomingTimeOr = await db.select(sql);
+
+    if (upcomingTimeOr.length != 1) return null;
+
+    for (final sqlite3Com.Row row in upcomingTimeOr) {
+      final getColVal = (String colName) {
+        final rowVal = row[colName];
+        if (rowVal is int)
+          return rowVal;
+        else
+          return -1;
+      };
+      final rowStartHour = getColVal('${TableHabitRecurrance.start_hour_fr}');
+      final rowStartMinute =
+          getColVal('${TableHabitRecurrance.start_minute_fr}');
+      final rowEndHour = getColVal('${TableHabitRecurrance.end_hour_fr}');
+      final rowEndMinute = getColVal('${TableHabitRecurrance.end_minute_fr}');
+      if (rowStartHour == -1 ||
+          rowStartMinute == -1 ||
+          rowEndHour == -1 ||
+          rowEndMinute == -1) {
+        continue;
+      }
+
+      final timeRange = TimeRange(
+        startHour: rowStartHour,
+        startMinute: rowStartMinute,
+        endHour: rowEndHour,
+        endMinute: rowEndMinute,
+      );
+
+      final habit =
+          Habit(name: row['${TableHabitRecurrance.habit_fr}'], recurrances: {
+        row['${TableHabitRecurrance.weekday_id_fr}']: [timeRange]
+      });
+
+      return habit;
+    }
+    return null;
+  }
 }

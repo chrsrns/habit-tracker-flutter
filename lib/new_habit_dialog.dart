@@ -94,7 +94,7 @@ class _NewHabitDialogState extends State<NewHabitDialog> {
       habitNameController.text = habit.name;
       for (var recurrance in habit.recurrances.keys) {
         uiEntries.add(_MutableRecurrancePair(
-            weekday: Weekday.values[recurrance],
+            weekday: Weekday.fromInt(recurrance),
             timeranges: habit.recurrances[recurrance]));
       }
     }
@@ -293,7 +293,7 @@ class _NewHabitDialogState extends State<NewHabitDialog> {
                           for (var recurranceItem in uiEntries.items) {
                             final weekday = recurranceItem.weekday;
                             if (weekday != null)
-                              map[weekday.index] = recurranceItem.timeranges;
+                              map[weekday.intVal] = recurranceItem.timeranges;
                           }
                           print(map);
                           var deleteFirst = () {

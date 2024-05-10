@@ -9,4 +9,12 @@ enum Weekday {
 
   const Weekday(this.label);
   final String label;
+
+  // THIS SHOULD BE USED IN PLACE OF `index` getter
+  int get intVal => this.index + 1;
+
+  // THIS SHOULD BE USED IN PLACE OF ACCESSING `values` array
+  static Weekday fromInt(int val) {
+    return Weekday.values[val - 1];
+  }
 }

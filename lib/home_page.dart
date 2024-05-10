@@ -1,8 +1,6 @@
 import 'package:cohabit/new_habit_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:cohabit/db/database_helper.dart';
-import 'package:cohabit/db/db_habit.dart';
-import 'package:cohabit/db/db_time_range.dart';
 import 'package:cohabit/nav_destinations.dart';
 
 class HomePage extends StatefulWidget {

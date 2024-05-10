@@ -38,34 +38,34 @@ class DatabaseHelper {
 
       for (var time in times) {
         var sql = """
-            INSERT INTO recurrance(
-              ${TableRecurrance.weekday}, 
-              ${TableRecurrance.start_hour}, 
-              ${TableRecurrance.start_minute}, 
-              ${TableRecurrance.end_hour},
-              ${TableRecurrance.end_minute}) 
-              VALUES(
-                '$weekday', 
-                '${time.startHour}',
-                '${time.startMinute}',
-                '${time.endHour}',
-                '${time.endMinute}')
-                ON CONFLICT DO NOTHING;
-            INSERT INTO habit_recurrance(
-              ${TableHabitRecurrance.habit_fr}, 
-              ${TableHabitRecurrance.weekday_id_fr}, 
-              ${TableHabitRecurrance.start_hour_fr}, 
-              ${TableHabitRecurrance.start_minute_fr}, 
-              ${TableHabitRecurrance.end_hour_fr}, 
-              ${TableHabitRecurrance.end_minute_fr}) 
-              VALUES(
-                '${habit.name}',
-                '$weekday',
-                '${time.startHour}', 
-                '${time.startMinute}', 
-                '${time.endHour}', 
-                '${time.endMinute}') 
-                ON CONFLICT DO NOTHING;
+          INSERT INTO recurrance(
+            ${TableRecurrance.weekday}, 
+            ${TableRecurrance.start_hour}, 
+            ${TableRecurrance.start_minute}, 
+            ${TableRecurrance.end_hour},
+            ${TableRecurrance.end_minute}) 
+            VALUES(
+              '$weekday', 
+              '${time.startHour}',
+              '${time.startMinute}',
+              '${time.endHour}',
+              '${time.endMinute}')
+              ON CONFLICT DO NOTHING;
+          INSERT INTO habit_recurrance(
+            ${TableHabitRecurrance.habit_fr}, 
+            ${TableHabitRecurrance.weekday_id_fr}, 
+            ${TableHabitRecurrance.start_hour_fr}, 
+            ${TableHabitRecurrance.start_minute_fr}, 
+            ${TableHabitRecurrance.end_hour_fr}, 
+            ${TableHabitRecurrance.end_minute_fr}) 
+            VALUES(
+              '${habit.name}',
+              '$weekday',
+              '${time.startHour}', 
+              '${time.startMinute}', 
+              '${time.endHour}', 
+              '${time.endMinute}') 
+              ON CONFLICT DO NOTHING;
           """;
         print("[Executing insert SQL]");
         print(sql);

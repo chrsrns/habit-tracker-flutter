@@ -165,14 +165,52 @@ class DatabaseHelper {
     final currentTime = DateTime.now();
 
     var sql = '''
-      SELECT *
-        FROM habit_recurrance
-        WHERE ${TableHabitRecurrance.weekday_id_fr} >= ${currentTime.weekday} 
-        AND ${TableHabitRecurrance.start_hour_fr} >= ${currentTime.hour} 
-        ORDER BY ${TableHabitRecurrance.weekday_id_fr} ASC,
-          ${TableHabitRecurrance.start_hour_fr} ASC,
-          ${TableHabitRecurrance.start_minute_fr} ASC
-        LIMIT 1;
+      SELECT * FROM (
+        SELECT * FROM (
+          SELECT *
+            FROM habit_recurrance
+            WHERE ${TableHabitRecurrance.weekday_id_fr} = ${currentTime.weekday} 
+            AND ${TableHabitRecurrance.start_hour_fr} >= ${currentTime.hour} 
+            ORDER BY ${TableHabitRecurrance.weekday_id_fr} ASC,
+              ${TableHabitRecurrance.start_hour_fr} ASC,
+              ${TableHabitRecurrance.start_minute_fr} ASC
+        )
+
+        UNION ALL
+
+        SELECT * FROM (
+          SELECT *
+            FROM habit_recurrance
+            WHERE ${TableHabitRecurrance.weekday_id_fr} > ${currentTime.weekday} 
+            ORDER BY ${TableHabitRecurrance.weekday_id_fr} ASC,
+              ${TableHabitRecurrance.start_hour_fr} ASC,
+              ${TableHabitRecurrance.start_minute_fr} ASC
+        )
+        
+        UNION ALL
+
+        SELECT * FROM (
+          SELECT *
+            FROM habit_recurrance
+            WHERE ${TableHabitRecurrance.weekday_id_fr} < ${currentTime.weekday} 
+            ORDER BY ${TableHabitRecurrance.weekday_id_fr} ASC,
+              ${TableHabitRecurrance.start_hour_fr} ASC,
+              ${TableHabitRecurrance.start_minute_fr} ASC
+        )
+        
+        UNION ALL
+
+        SELECT * FROM (
+          SELECT *
+            FROM habit_recurrance
+            WHERE ${TableHabitRecurrance.weekday_id_fr} = ${currentTime.weekday} 
+            AND ${TableHabitRecurrance.start_hour_fr} < ${currentTime.hour} 
+            ORDER BY ${TableHabitRecurrance.weekday_id_fr} ASC,
+              ${TableHabitRecurrance.start_hour_fr} ASC,
+              ${TableHabitRecurrance.start_minute_fr} ASC
+        )
+      )
+      LIMIT 1;
     ''';
     print(sql);
     var upcomingTimeOr = await db.select(sql);

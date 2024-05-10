@@ -132,7 +132,12 @@ class DatabaseHelper {
   static Future<ResultSet> retrieveHabits() async {
     final db = await _db;
 
-    var result = await db.select('SELECT * FROM habits;');
+    var result = await db.select('''
+      SELECT * FROM habit_recurrance
+        ORDER BY ${TableHabitRecurrance.weekday_id_fr} ASC,
+          ${TableHabitRecurrance.start_hour_fr} ASC,
+          ${TableHabitRecurrance.start_minute_fr} ASC;
+    ''');
     // print("Habits #: ${result.length}");
     // for (final Row row in result) {
     //   print('Habit[name: ${row['name']}]');

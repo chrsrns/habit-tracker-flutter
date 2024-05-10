@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:sqlite3/common.dart';
+import 'package:sqlite3/common.dart' as sqlite3Com;
 import 'package:cohabit/db/db.dart';
 import 'package:cohabit/db/db_habit.dart';
 import 'package:cohabit/db/db_time_range.dart';
@@ -87,7 +88,7 @@ class DatabaseHelper {
     // print('[Habit # from SELECT]: ${habitFromDb.length}');
     if (habitFromDb.length != 1) return null;
     final habit = Habit(name: name);
-    for (final Row row in recurrancesFromDb) {
+    for (final sqlite3Com.Row row in recurrancesFromDb) {
       final int weekdayFromDb =
           row['${TableHabitRecurrance.weekday_id_fr}'] ?? -1;
       final getColVal = (String colName) {

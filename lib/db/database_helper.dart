@@ -27,6 +27,7 @@ class DatabaseHelper {
 
     db.execute(
       """
+        PRAGMA foreign_keys = ON;
         INSERT INTO habits(name) VALUES('${habit.name}')
           ON CONFLICT DO NOTHING;
       """,
@@ -38,6 +39,7 @@ class DatabaseHelper {
 
       for (var time in times) {
         var sql = """
+          PRAGMA foreign_keys = ON;
           INSERT INTO recurrance(
             ${TableRecurrance.weekday}, 
             ${TableRecurrance.start_hour}, 
@@ -142,13 +144,19 @@ class DatabaseHelper {
   static Future deleteHabit(Habit habit) async {
     final db = await _db;
 
-    db.execute("DELETE FROM habits WHERE name='${habit.name}'");
+    db.execute('''
+      PRAGMA foreign_keys = ON;
+      DELETE FROM habits WHERE name='${habit.name}'
+    ''');
   }
 
   static Future deleteHabitByName(String habit) async {
     final db = await _db;
 
-    db.execute("DELETE FROM habits WHERE name='${habit}'");
+    db.execute('''
+      PRAGMA foreign_keys = ON;
+      DELETE FROM habits WHERE name='${habit}';
+    ''');
   }
 
   // TODO current implementation only checks upcoming habit for the current week. Should be changed.

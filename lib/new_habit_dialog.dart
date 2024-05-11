@@ -179,6 +179,7 @@ class _NewHabitDialogState extends State<NewHabitDialog> {
               child: Text("Add new time..."))
         ];
         return Container(
+          alignment: Alignment.center,
           child: FlexList(
             children: [
               IntrinsicWidth(

@@ -178,32 +178,60 @@ class _NewHabitDialogState extends State<NewHabitDialog> {
               },
               child: Text("Add new time..."))
         ];
-        return Container(
-          alignment: Alignment.center,
-          child: FlexList(
-            children: [
-              IntrinsicWidth(
-                child: DropdownButton(
-                  padding: EdgeInsets.only(left: 8, right: 8),
-                  hint: Text("Select weekday"),
-                  items: list,
-                  value: recurrance_pair.weekday,
-                  onChanged: (dropdownValue) {
-                    if (dropdownValue is Weekday)
+        final buttonStyle = ButtonStyle(
+            backgroundColor: MaterialStateProperty.all(Colors.white),
+            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(4))));
+        return Row(
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            Expanded(
+              child: FlexList(
+                children: [
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IntrinsicWidth(
+                        child: DropdownButton(
+                          padding: EdgeInsets.only(left: 8, right: 8),
+                          hint: Text("Select weekday"),
+                          items: list,
+                          value: recurrance_pair.weekday,
+                          onChanged: (dropdownValue) {
+                            if (dropdownValue is Weekday)
+                              setState(() {
+                                uiEntries.updateWeekdayOfPair(
+                                    recurrance_pair, dropdownValue);
+                              });
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                  IntrinsicWidth(
+                    child: Column(
+                      children: timeRangesAsButtons,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                IconButton(
+                    style: buttonStyle,
+                    onPressed: () {
                       setState(() {
-                        uiEntries.updateWeekdayOfPair(
-                            recurrance_pair, dropdownValue);
+                        uiEntries.items.remove(recurrance_pair);
                       });
-                  },
-                ),
-              ),
-              IntrinsicWidth(
-                child: Column(
-                  children: timeRangesAsButtons,
-                ),
-              ),
-            ],
-          ),
+                    },
+                    icon: Icon(Icons.delete_forever)),
+              ],
+            ),
+          ],
         );
       }).toList();
     };

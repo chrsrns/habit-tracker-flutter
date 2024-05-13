@@ -38,6 +38,7 @@ dependencies:
   path_provider: ^2.1.2
   sqlite3_flutter_libs: ^0.5.20
   flex_list: ^1.0.0
+  cron: ^0.6.0
 
 dev_dependencies:
   flutter_test:

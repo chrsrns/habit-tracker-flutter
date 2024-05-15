@@ -1,7 +1,9 @@
 import 'package:cohabit/new_habit_dialog.dart';
+import 'package:cron/cron.dart';
 import 'package:flutter/material.dart';
 import 'package:cohabit/db/database_helper.dart';
 import 'package:cohabit/nav_destinations.dart';
+import 'package:sqlite3/common.dart' hide Row;
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key, required this.title}) : super(key: key);
@@ -30,6 +32,53 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       _selectedIndex = index;
     });
+  }
+
+  var cron = Cron();
+
+  void newSchedule() async {
+    try {
+      await cron.close();
+      cron = Cron();
+      var upcomingHabit = await DatabaseHelper.upcomingHabit;
+      var recurrance = upcomingHabit?.recurrances.entries.first;
+
+      if (recurrance != null) {
+        var firstTimeRange = recurrance.value.first;
+        print(
+            "Now Scheduled: [weekday: ${recurrance.key}, startHour: ${firstTimeRange.startHour}, startMinute: ${firstTimeRange.startMinute}]");
+        cron.schedule(
+            Schedule(
+                hours: firstTimeRange.startHour,
+                minutes: firstTimeRange.startMinute), () {
+          print("Habit is starting");
+          showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: Text("Habit is starting..."),
+                );
+              });
+        });
+      }
+    } on ScheduleParseException {
+      // "ScheduleParseException" is thrown if cron parsing is failed.
+      await cron.close();
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    newSchedule();
+    DatabaseHelper.updates.then((value) => value.listen((event) {
+          // TODO Table names should have an enum
+          if (event.kind == SqliteUpdateKind.insert &&
+              event.tableName == "habit_recurrance") {
+            newSchedule();
+          }
+        }));
   }
 
   Widget buildNavRailScaffold() {
@@ -128,13 +177,6 @@ class _HomePageState extends State<HomePage> {
         ),
       );
     });
-  }
-
-  @override
-  void initState() {
-    super.initState();
-
-
   }
 
   @override

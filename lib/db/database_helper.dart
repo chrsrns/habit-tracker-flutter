@@ -22,7 +22,8 @@ class DatabaseHelper {
     return db.updates;
   }
 
-  static Future<int> insertHabit(Habit habit) async {
+  static Future<bool> insertHabit(Habit habit) async {
+    if (!habit.valid) return false;
     final db = await _db;
 
     db.execute(
@@ -77,7 +78,7 @@ class DatabaseHelper {
       }
     }
 
-    return 0; //TODO Aggregate all the results to one
+    return true; //TODO Aggregate all the results to one
   }
 
   static Future<Habit?> retrieveHabit(String name) async {

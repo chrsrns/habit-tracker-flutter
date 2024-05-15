@@ -175,7 +175,20 @@ class DatabaseHelper {
           SELECT *
             FROM habit_recurrance
             WHERE ${TableHabitRecurrance.weekday_id_fr} = ${currentTime.weekday} 
-            AND ${TableHabitRecurrance.start_hour_fr} >= ${currentTime.hour} 
+            AND ${TableHabitRecurrance.start_hour_fr} = ${currentTime.hour} 
+            AND ${TableHabitRecurrance.start_minute_fr} > ${currentTime.minute} 
+            ORDER BY ${TableHabitRecurrance.weekday_id_fr} ASC,
+              ${TableHabitRecurrance.start_hour_fr} ASC,
+              ${TableHabitRecurrance.start_minute_fr} ASC
+        )
+         
+        UNION ALL
+
+        SELECT * FROM (
+          SELECT *
+            FROM habit_recurrance
+            WHERE ${TableHabitRecurrance.weekday_id_fr} = ${currentTime.weekday} 
+            AND ${TableHabitRecurrance.start_hour_fr} > ${currentTime.hour} 
             ORDER BY ${TableHabitRecurrance.weekday_id_fr} ASC,
               ${TableHabitRecurrance.start_hour_fr} ASC,
               ${TableHabitRecurrance.start_minute_fr} ASC

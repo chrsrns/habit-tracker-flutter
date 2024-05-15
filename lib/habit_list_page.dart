@@ -29,7 +29,7 @@ class _HabitListPageState extends State<HabitListPage> {
             Duration(seconds: 0), (() => DatabaseHelper.retrieveHabits()))
         .whenComplete(() => setState(() {
               _isLoading = false;
-              print(_isLoading);
+              // print(_isLoading);
             }));
 
     DatabaseHelper.updates.then((value) => value
@@ -39,7 +39,7 @@ class _HabitListPageState extends State<HabitListPage> {
                   Duration(seconds: 0), (() => DatabaseHelper.retrieveHabits()))
               .whenComplete(() => setState(() {
                     _isLoading = false;
-                    print(_isLoading);
+                    // print(_isLoading);
                   }));
         });
       }));

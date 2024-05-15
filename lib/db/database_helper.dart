@@ -69,8 +69,8 @@ class DatabaseHelper {
               '${time.endMinute}') 
               ON CONFLICT DO NOTHING;
           """;
-        print("[Executing insert SQL]");
-        print(sql);
+        // print("[Executing insert SQL]");
+        // print(sql);
         db.execute(
           sql,
         );
@@ -124,8 +124,8 @@ class DatabaseHelper {
       ));
     }
 
-    print('[Habit]: ');
-    print(habit.toJsonString());
+    // print('[Habit]: ');
+    // print(habit.toJsonString());
     return habit;
   }
 
@@ -217,7 +217,7 @@ class DatabaseHelper {
       )
       LIMIT 1;
     ''';
-    print(sql);
+    // print(sql);
     var upcomingTimeOr = await db.select(sql);
 
     if (upcomingTimeOr.length != 1) return null;

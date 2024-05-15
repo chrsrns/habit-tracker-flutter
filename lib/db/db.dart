@@ -68,7 +68,7 @@ Future<void> openDb() async {
       PRAGMA user_version = $currentDbVersion;
       COMMIT;
     ''';
-    print(sql);
+    // print(sql);
     sqliteDb.execute(sql);
   }
 }

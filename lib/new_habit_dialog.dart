@@ -49,7 +49,7 @@ class _RecurrancePairList {
     } else {
       tmp.timeranges.addAll(recurrancePair.timeranges);
       items.removeWhere((element) {
-        print(toRemove.contains(element));
+        // print(toRemove.contains(element));
         return toRemove.contains(element);
       });
     }
@@ -59,7 +59,7 @@ class _RecurrancePairList {
 class NewHabitDialog extends StatefulWidget {
   final Habit? habit;
   NewHabitDialog({super.key, this.habit}) {
-    print("Selected Habit: ${habit?.name}");
+    // print("Selected Habit: ${habit?.name}");
   }
 
   @override
@@ -322,7 +322,7 @@ class _NewHabitDialogState extends State<NewHabitDialog> {
                             if (weekday != null)
                               map[weekday.intVal] = recurranceItem.timeranges;
                           }
-                          print(map);
+                          // print(map);
                           var deleteFirst = () {
                             var habit = _habit;
                             if (habit != null) {

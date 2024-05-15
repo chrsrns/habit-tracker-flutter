@@ -10,6 +10,17 @@ class Habit {
   Habit({required this.name, Map<int, List<TimeRange>>? recurrances})
       : recurrances = recurrances ?? {};
 
+  bool get valid {
+    for (var recurrance in recurrances.entries) {
+      for (var timeRange in recurrance.value) {
+        if (timeRange.startHour > timeRange.endHour) return false;
+        if (timeRange.startHour == timeRange.endHour &&
+            timeRange.startMinute >= timeRange.endMinute) return false;
+      }
+    }
+    return true;
+  }
+
   // For Debugging
   Map<String, dynamic> _toJson() {
     return {

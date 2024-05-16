@@ -165,7 +165,6 @@ class DatabaseHelper {
     ''');
   }
 
-  // TODO current implementation only checks upcoming habit for the current week. Should be changed.
   static Future<Habit?> get upcomingHabit async {
     final db = await _db;
     final currentTime = DateTime.now();

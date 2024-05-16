@@ -1,60 +1,11 @@
+import 'dart:math';
+
 import 'package:cohabit/db/database_helper.dart';
 import 'package:cohabit/db/db_habit.dart';
 import 'package:cohabit/db/db_time_range.dart';
 import 'package:cohabit/db/weekdays_enum.dart';
 import 'package:flex_list/flex_list.dart';
 import 'package:flutter/material.dart';
-
-class _MutableRecurrancePair {
-  Weekday? weekday;
-  List<TimeRange> timeranges = [];
-
-  _MutableRecurrancePair({this.weekday, List<TimeRange>? timeranges})
-      : timeranges = timeranges ?? [];
-
-  _MutableRecurrancePair copy() => _MutableRecurrancePair(
-      weekday: this.weekday, timeranges: this.timeranges);
-}
-
-class _RecurrancePairList {
-  List<_MutableRecurrancePair> items = [];
-
-  void add(_MutableRecurrancePair recurrancePair) {
-    for (var i = 0; i < items.length; i++) {
-      var existingPair = items[i];
-
-      if (recurrancePair.weekday == existingPair.weekday) {
-        items[i].weekday = recurrancePair.weekday;
-        items[i].timeranges.addAll(recurrancePair.timeranges);
-        return;
-      }
-    }
-    items.add(recurrancePair);
-  }
-
-  void updateWeekdayOfPair(
-      _MutableRecurrancePair recurrancePair, Weekday weekday) {
-    final List<_MutableRecurrancePair> toRemove = [];
-    var tmp = _MutableRecurrancePair();
-    for (final existingPair in items) {
-      if (existingPair.weekday == weekday) {
-        tmp = existingPair.copy();
-        toRemove.add(recurrancePair);
-        break;
-      }
-    }
-    if (toRemove.isEmpty) {
-      var firstWhere = items.firstWhere((element) => element == recurrancePair);
-      firstWhere.weekday = weekday;
-    } else {
-      tmp.timeranges.addAll(recurrancePair.timeranges);
-      items.removeWhere((element) {
-        // print(toRemove.contains(element));
-        return toRemove.contains(element);
-      });
-    }
-  }
-}
 
 class NewHabitDialog extends StatefulWidget {
   final Habit? habit;
@@ -67,7 +18,9 @@ class NewHabitDialog extends StatefulWidget {
 }
 
 class _NewHabitDialogState extends State<NewHabitDialog> {
-  final Habit? _habit;
+  final Habit _srcHabit;
+  Habit _habitStateData;
+  final _isCreationMode;
 
   List<DropdownMenuItem<Weekday>> get weekdayDropdownItems {
     List<DropdownMenuItem<Weekday>> menuItems = [
@@ -83,19 +36,21 @@ class _NewHabitDialogState extends State<NewHabitDialog> {
   }
 
   final habitNameController = TextEditingController();
-  final uiEntries = _RecurrancePairList();
 
-  _NewHabitDialogState(this._habit) {
-    final habit = _habit;
+  _NewHabitDialogState(Habit? habit)
+      : _srcHabit = habit ?? Habit(name: ""),
+        _habitStateData = habit ?? Habit(name: ""),
+        _isCreationMode = habit == null {
+    final habit = _habitStateData;
 
-    if (habit != null) {
+    if (!_isCreationMode) {
       habitNameController.text = habit.name;
-      for (var recurrance in habit.recurrances.keys) {
-        uiEntries.add(_MutableRecurrancePair(
-            weekday: Weekday.fromInt(recurrance),
-            timeranges: habit.recurrances[recurrance]));
-      }
     }
+    habitNameController.addListener(() {
+      _habitStateData = Habit(
+          name: habitNameController.text,
+          recurrances: _habitStateData.recurrances);
+    });
   }
 
   @override
@@ -116,24 +71,42 @@ class _NewHabitDialogState extends State<NewHabitDialog> {
         return appWidth;
     }();
 
+    void updateWeekdayOfPair(Weekday fromWeekday, Weekday toWeekday) {
+      var srcRecurrance = _habitStateData.recurrances[fromWeekday.intVal];
+      if (_habitStateData.recurrances.keys.contains(toWeekday.intVal)) {
+        var destRecurrance = _habitStateData.recurrances[toWeekday.intVal];
+        if (srcRecurrance != null) destRecurrance?.addAll(srcRecurrance);
+      } else {
+        if (srcRecurrance != null)
+          _habitStateData.recurrances[toWeekday.intVal] = srcRecurrance;
+      }
+      _habitStateData.recurrances.remove(fromWeekday.intVal);
+    }
+
     final getEntriesList = (BuildContext ctx) {
-      return uiEntries.items.map((recurrance_pair) {
+      var sortedEntries = _habitStateData.recurrances.entries.toList();
+      sortedEntries.sort(((a, b) => a.key.compareTo(b.key)));
+      return sortedEntries.map((recurrance_pair) {
+        var weekday = Weekday.fromInt(recurrance_pair.key);
+        var timeRanges = recurrance_pair.value;
         var list = weekdayDropdownItems.where((element) {
-          for (final pair in uiEntries.items) {
-            if (recurrance_pair.weekday == element.value) return true;
-            if (pair.weekday == element.value) return false;
+          if (_habitStateData.valid) {
+            for (final pair in _habitStateData.recurrances.entries) {
+              if (weekday == element.value) return true;
+              if (Weekday.fromInt(pair.key) == element.value) return false;
+            }
           }
           return true;
         }).toList();
         var timeRangesAsButtons = [
-          ...recurrance_pair.timeranges.map((e) => Container(
+          ...timeRanges.map((e) => Container(
                 margin: EdgeInsets.only(top: 8.0, bottom: 8.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     ElevatedButton(
                         onPressed: () {
-                          updateTimeRange(buildctx, e, recurrance_pair);
+                          updateTimeRange(buildctx, e, timeRanges);
                         },
                         child: Container(
                           padding: EdgeInsets.only(
@@ -158,23 +131,29 @@ class _NewHabitDialogState extends State<NewHabitDialog> {
                   ],
                 ),
               )),
-          ElevatedButton(
-              onPressed: () {
-                if (recurrance_pair.weekday == null) {
-                  ScaffoldMessenger.of(ctx).showSnackBar(
-                    SnackBar(
-                      content: const Text('Select weekday on the left first'),
-                      duration: const Duration(seconds: 3),
-                      action: SnackBarAction(
-                        label: 'ACTION',
-                        onPressed: () {},
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 22),
+            child: ElevatedButton(
+                onPressed: () {
+                  if (timeRanges.isNotEmpty) {
+                    ScaffoldMessenger.of(ctx).showSnackBar(
+                      SnackBar(
+                        content: const Text('Select weekday on the left first'),
+                        duration: const Duration(seconds: 3),
+                        action: SnackBarAction(
+                          label: 'ACTION',
+                          onPressed: () {},
+                        ),
                       ),
-                    ),
-                  );
-                } else
-                  showTimeRangePickers(buildctx, recurrance_pair);
-              },
-              child: Text("Add new time..."))
+                    );
+                  } else
+                    showTimeRangePickers(buildctx, timeRanges);
+                },
+                child: Padding(
+                    padding:
+                        EdgeInsets.only(left: 4, right: 4, top: 8, bottom: 8),
+                    child: Text("Add new time..."))),
+          )
         ];
         final buttonStyle = ButtonStyle(
             backgroundColor: MaterialStateProperty.all(Colors.white),
@@ -183,6 +162,7 @@ class _NewHabitDialogState extends State<NewHabitDialog> {
                     borderRadius: BorderRadius.circular(4))));
         return Row(
           mainAxisSize: MainAxisSize.max,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Expanded(
               child: FlexList(
@@ -195,12 +175,13 @@ class _NewHabitDialogState extends State<NewHabitDialog> {
                           padding: EdgeInsets.only(left: 8, right: 8),
                           hint: Text("Select weekday"),
                           items: list,
-                          value: recurrance_pair.weekday,
+                          value: weekday,
                           onChanged: (dropdownValue) {
                             if (dropdownValue is Weekday)
                               setState(() {
-                                uiEntries.updateWeekdayOfPair(
-                                    recurrance_pair, dropdownValue);
+                                updateWeekdayOfPair(
+                                    Weekday.fromInt(recurrance_pair.key),
+                                    dropdownValue);
                               });
                           },
                         ),
@@ -209,6 +190,7 @@ class _NewHabitDialogState extends State<NewHabitDialog> {
                   ),
                   IntrinsicWidth(
                     child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: timeRangesAsButtons,
                     ),
                   ),
@@ -223,7 +205,7 @@ class _NewHabitDialogState extends State<NewHabitDialog> {
                     style: buttonStyle,
                     onPressed: () {
                       setState(() {
-                        uiEntries.items.remove(recurrance_pair);
+                        _habitStateData.recurrances.remove(recurrance_pair.key);
                       });
                     },
                     icon: Icon(Icons.delete_forever)),
@@ -243,7 +225,7 @@ class _NewHabitDialogState extends State<NewHabitDialog> {
             child: GestureDetector(
               onTap: () {},
               child: AlertDialog(
-                title: Text(_habit == null
+                title: Text(_isCreationMode
                     ? "Create New Habit"
                     : "Modifying this Habit"),
                 content: Center(
@@ -293,17 +275,28 @@ class _NewHabitDialogState extends State<NewHabitDialog> {
                     padding: const EdgeInsets.symmetric(vertical: 4),
                     child: FilledButton.tonal(
                         onPressed: () {
-                          final pair = _MutableRecurrancePair();
-                          setState(() {
-                            uiEntries.add(pair);
-                          });
+                          final weekdays = List.from(Weekday.values);
+                          for (var weedayInt
+                              in _habitStateData.recurrances.keys) {
+                            var weekday = Weekday.fromInt(weedayInt);
+                            weekdays.remove(weekday);
+                          }
+                          if (weekdays.isNotEmpty) {
+                            setState(() {
+                              final _random = new Random();
+                              var randomWeekday =
+                                  weekdays[_random.nextInt(weekdays.length)];
+                              _habitStateData
+                                  .recurrances[randomWeekday.intVal] = [];
+                            });
+                          }
                         },
                         child: Text("Add another week")),
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 4),
                     child: FilledButton(
-                        onPressed: () {
+                        onPressed: () async {
                           if (habitNameController.text.isEmpty) {
                             ScaffoldMessenger.of(scaffoldMessengerCtx)
                                 .showSnackBar(
@@ -316,31 +309,15 @@ class _NewHabitDialogState extends State<NewHabitDialog> {
                             return;
                           }
 
-                          var map = Map<int, List<TimeRange>>();
-                          for (var recurranceItem in uiEntries.items) {
-                            final weekday = recurranceItem.weekday;
-                            if (weekday != null)
-                              map[weekday.intVal] = recurranceItem.timeranges;
+                          Navigator.of(context, rootNavigator: true).pop();
+                          // TODO This delays the database transaction. It is better to split the transaction to smaller chunks so that other Futures don't starve.
+                          await Future.delayed(Durations.short4);
+                          if (!_isCreationMode && _srcHabit.valid) {
+                            await DatabaseHelper.deleteHabit(_srcHabit);
                           }
-                          // print(map);
-                          var deleteFirst = () {
-                            var habit = _habit;
-                            if (habit != null) {
-                              return DatabaseHelper.deleteHabit(habit);
-                            } else
-                              return Future.value();
-                          }();
-                          deleteFirst.then((_) {
-                            DatabaseHelper.insertHabit(
-                              Habit(
-                                  name: habitNameController.text,
-                                  recurrances: map),
-                            );
-                          }).whenComplete(() {
-                            Navigator.of(context, rootNavigator: true).pop();
-                          });
+                          await DatabaseHelper.insertHabit(_habitStateData);
                         },
-                        child: Text(_habit == null ? "Create" : "Modify")),
+                        child: Text(_isCreationMode ? "Create" : "Modify")),
                   )
                 ],
               ),
@@ -351,8 +328,8 @@ class _NewHabitDialogState extends State<NewHabitDialog> {
     );
   }
 
-  void updateTimeRange(BuildContext context, TimeRange e,
-      _MutableRecurrancePair recurrance_pair) {
+  void updateTimeRange(
+      BuildContext context, TimeRange e, List<TimeRange> timeRanges) {
     final timePicker = showTimePicker(
         context: context,
         helpText: "What is the starting time of this habit?",
@@ -371,8 +348,8 @@ class _NewHabitDialogState extends State<NewHabitDialog> {
             setState(() {
               var endHour = endTime.hour;
               var endMinute = endTime.minute;
-              final indexOf = recurrance_pair.timeranges.indexOf(e);
-              recurrance_pair.timeranges.replaceRange(indexOf, indexOf + 1, [
+              final indexOf = timeRanges.indexOf(e);
+              timeRanges.replaceRange(indexOf, indexOf + 1, [
                 TimeRange(
                     startHour: startHour,
                     startMinute: startMinute,
@@ -386,8 +363,7 @@ class _NewHabitDialogState extends State<NewHabitDialog> {
     });
   }
 
-  void showTimeRangePickers(
-      BuildContext context, _MutableRecurrancePair recurrance_pair) {
+  void showTimeRangePickers(BuildContext context, List<TimeRange> timeRanges) {
     final timePicker = showTimePicker(
         context: context,
         helpText: "What is the starting time of this habit?",
@@ -411,7 +387,7 @@ class _NewHabitDialogState extends State<NewHabitDialog> {
                   startMinute: startMinute,
                   endHour: endHour,
                   endMinute: endMinute);
-              recurrance_pair.timeranges.add(timeRange);
+              timeRanges.add(timeRange);
             });
           }
         });

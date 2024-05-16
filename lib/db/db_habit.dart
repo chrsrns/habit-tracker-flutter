@@ -16,6 +16,7 @@ class Habit {
         if (timeRange.startHour > timeRange.endHour) return false;
         if (timeRange.startHour == timeRange.endHour &&
             timeRange.startMinute >= timeRange.endMinute) return false;
+        if (name.isEmpty) return false;
       }
     }
     return true;

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cohabit/new_habit_dialog.dart';
 import 'package:cron/cron.dart';
 import 'package:flutter/material.dart';
@@ -34,37 +36,41 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  var cron = Cron();
+  final cron = Cron();
+  ScheduledTask? currentSchedule = null;
+  StreamSubscription<void> delayer = Future.value().asStream().listen((_) {});
 
   void newSchedule() async {
-    try {
-      await cron.close();
-      cron = Cron();
-      var upcomingHabit = await DatabaseHelper.upcomingHabit;
-      var recurrance = upcomingHabit?.recurrances.entries.first;
+    await delayer.cancel();
+    delayer = Future.delayed(Durations.long1).asStream().listen((event) async {
+      try {
+        var upcomingHabit = await DatabaseHelper.upcomingHabit;
+        var recurrance = upcomingHabit?.recurrances.entries.first;
 
-      if (recurrance != null) {
-        var firstTimeRange = recurrance.value.first;
-        print(
-            "Now Scheduled: [weekday: ${recurrance.key}, startHour: ${firstTimeRange.startHour}, startMinute: ${firstTimeRange.startMinute}]");
-        cron.schedule(
-            Schedule(
-                hours: firstTimeRange.startHour,
-                minutes: firstTimeRange.startMinute), () {
-          print("Habit is starting");
-          showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return AlertDialog(
-                  title: Text("Habit is starting..."),
-                );
-              });
-        });
+        if (recurrance != null) {
+          var firstTimeRange = recurrance.value.first;
+          print(
+              "Now Scheduled: [weekday: ${recurrance.key}, startHour: ${firstTimeRange.startHour}, startMinute: ${firstTimeRange.startMinute}]");
+          await currentSchedule?.cancel();
+          currentSchedule = cron.schedule(
+              Schedule(
+                  hours: firstTimeRange.startHour,
+                  minutes: firstTimeRange.startMinute), () {
+            print("Habit is starting");
+            showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: Text("Habit is starting..."),
+                  );
+                });
+          });
+        }
+      } on ScheduleParseException {
+        // "ScheduleParseException" is thrown if cron parsing is failed.
+        await cron.close();
       }
-    } on ScheduleParseException {
-      // "ScheduleParseException" is thrown if cron parsing is failed.
-      await cron.close();
-    }
+    });
   }
 
   @override

@@ -85,6 +85,14 @@ class _HomePageState extends State<HomePage> {
         }));
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+    currentSchedule?.cancel();
+    cron.close();
+    delayer.cancel();
+  }
+
   Widget buildNavRailScaffold() {
     return LayoutBuilder(builder: (context, constraints) {
       return Scaffold(

@@ -5,7 +5,6 @@ import 'package:cron/cron.dart';
 import 'package:flutter/material.dart';
 import 'package:cohabit/db/database_helper.dart';
 import 'package:cohabit/nav_destinations.dart';
-import 'package:sqlite3/common.dart' hide Row;
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key, required this.title}) : super(key: key);
@@ -80,8 +79,7 @@ class _HomePageState extends State<HomePage> {
     newSchedule();
     DatabaseHelper.updates.then((value) => value.listen((event) {
           // TODO Table names should have an enum
-          if (event.kind == SqliteUpdateKind.insert &&
-              event.tableName == "habit_recurrance") {
+          if (event.tableName == "habit_recurrance") {
             newSchedule();
           }
         }));

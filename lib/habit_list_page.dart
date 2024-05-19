@@ -1,7 +1,10 @@
+import 'dart:async';
 import 'dart:collection';
 
+import 'package:cohabit/db/db_habit.dart';
 import 'package:cohabit/db/table_columns.dart';
 import 'package:cohabit/new_habit_dialog.dart';
+import 'package:cron/cron.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/material.dart' as material;
 import 'package:sqlite3/common.dart' as sqlite;
@@ -20,6 +23,23 @@ class _HabitListPageState extends State<HabitListPage> {
       Future.value(sqlite.ResultSet([], [], []));
 
   bool _isLoading = true;
+  Habit? ongoingHabit;
+  StreamSubscription<void> delayer = Future.value().asStream().listen((_) {});
+  Cron cron = Cron();
+  ScheduledTask? currentSchedule = null;
+
+  void updateOngoingHabit() async {
+    await delayer.cancel();
+    delayer = Future.delayed(Durations.long1).asStream().listen((event) async {
+      var ongoingHabits = await DatabaseHelper.ongoingHabit;
+      var habitOrNull = ongoingHabits.firstOrNull;
+      setState(() {
+        ongoingHabit = habitOrNull;
+        print(
+            "[${DateTime.now()} Ongoing Habit: ${ongoingHabit?.toJsonString()}");
+      });
+    });
+  }
 
   @override
   void initState() {
@@ -32,17 +52,25 @@ class _HabitListPageState extends State<HabitListPage> {
               // print(_isLoading);
             }));
 
+    updateOngoingHabit();
     DatabaseHelper.updates.then((value) => value
       ..listen((event) {
-        setState(() {
-          _habitData = Future.delayed(
-                  Duration(seconds: 0), (() => DatabaseHelper.retrieveHabits()))
-              .whenComplete(() => setState(() {
+        _habitData = Future.delayed(
+                Duration(seconds: 0), (() => DatabaseHelper.retrieveHabits()))
+            .whenComplete(() => setState(() {
+                  setState(() {
                     _isLoading = false;
-                    // print(_isLoading);
-                  }));
-        });
+                  });
+                  // print(_isLoading);
+                }));
+
+        if (event.tableName == "habit_recurrance") {
+          updateOngoingHabit();
+        }
       }));
+    currentSchedule = cron.schedule(Schedule.parse("*/1 * * * *"), () {
+      updateOngoingHabit();
+    });
   }
 
   @override
@@ -64,6 +92,13 @@ class _HabitListPageState extends State<HabitListPage> {
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
             ),
           ),
+          if (ongoingHabit != null)
+            Row(
+              children: [
+                Text("Ongoing Habit: "),
+                Text(ongoingHabit?.name ?? "")
+              ],
+            ),
           Divider(),
           FutureBuilder<sqlite.ResultSet>(
             future: _habitData,

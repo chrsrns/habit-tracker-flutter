@@ -295,7 +295,7 @@ class DatabaseHelper {
         (
           ${TableHabitRecurrance.end_hour_fr} = ${currentTime.hour}
           AND
-          ${TableHabitRecurrance.end_minute_fr} >= ${currentTime.minute} 
+          ${TableHabitRecurrance.end_minute_fr} > ${currentTime.minute} 
         )
       )
       ORDER BY ${TableHabitRecurrance.weekday_id_fr} ASC,

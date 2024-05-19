@@ -271,4 +271,77 @@ class DatabaseHelper {
     }
     return null;
   }
+
+  static Future<List<Habit>> get ongoingHabit async {
+    final db = await _db;
+    final currentTime = DateTime.now();
+
+    var sql = '''
+    SELECT *
+      FROM habit_recurrance
+      WHERE ${TableHabitRecurrance.weekday_id_fr} = ${currentTime.weekday} 
+      AND (
+        ${TableHabitRecurrance.start_hour_fr} < ${currentTime.hour} 
+        OR
+        (
+          ${TableHabitRecurrance.start_hour_fr} = ${currentTime.hour}
+          AND
+          ${TableHabitRecurrance.start_minute_fr} <= ${currentTime.minute} 
+        )
+      )
+      AND (
+        ${TableHabitRecurrance.end_hour_fr} > ${currentTime.hour} 
+        OR
+        (
+          ${TableHabitRecurrance.end_hour_fr} = ${currentTime.hour}
+          AND
+          ${TableHabitRecurrance.end_minute_fr} >= ${currentTime.minute} 
+        )
+      )
+      ORDER BY ${TableHabitRecurrance.weekday_id_fr} ASC,
+        ${TableHabitRecurrance.start_hour_fr} ASC,
+        ${TableHabitRecurrance.start_minute_fr} ASC
+      LIMIT 1;
+    ''';
+    // print(sql);
+    var ongoingTimeOr = await db.select(sql);
+
+    List<Habit> result = [];
+
+    for (final sqlite3Com.Row row in ongoingTimeOr) {
+      final getColVal = (String colName) {
+        final rowVal = row[colName];
+        if (rowVal is int)
+          return rowVal;
+        else
+          return -1;
+      };
+      final rowStartHour = getColVal('${TableHabitRecurrance.start_hour_fr}');
+      final rowStartMinute =
+          getColVal('${TableHabitRecurrance.start_minute_fr}');
+      final rowEndHour = getColVal('${TableHabitRecurrance.end_hour_fr}');
+      final rowEndMinute = getColVal('${TableHabitRecurrance.end_minute_fr}');
+      if (rowStartHour == -1 ||
+          rowStartMinute == -1 ||
+          rowEndHour == -1 ||
+          rowEndMinute == -1) {
+        continue;
+      }
+
+      final timeRange = TimeRange(
+        startHour: rowStartHour,
+        startMinute: rowStartMinute,
+        endHour: rowEndHour,
+        endMinute: rowEndMinute,
+      );
+
+      final habit =
+          Habit(name: row['${TableHabitRecurrance.habit_fr}'], recurrances: {
+        row['${TableHabitRecurrance.weekday_id_fr}']: [timeRange]
+      });
+
+      result.add(habit);
+    }
+    return result;
+  }
 }

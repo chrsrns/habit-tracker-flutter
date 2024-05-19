@@ -74,6 +74,14 @@ class _HabitListPageState extends State<HabitListPage> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+    currentSchedule?.cancel();
+    cron.close();
+    delayer.cancel();
+  }
+
+  @override
   Widget build(BuildContext context) {
     void deleteHabit(String habit) {
       setState(() {

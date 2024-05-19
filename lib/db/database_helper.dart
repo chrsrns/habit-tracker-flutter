@@ -147,6 +147,131 @@ class DatabaseHelper {
     return result;
   }
 
+  static Future<ResultSet> retrieveHabitsSorted() async {
+    final db = await _db;
+    final currentTime = DateTime.now();
+
+    var sql = '''
+      WITH RankedResults AS (
+        SELECT 
+            *, 
+            ROW_NUMBER() OVER (
+              PARTITION BY ${TableHabitRecurrance.habit_fr} 
+              ) AS rn_duplicate
+        FROM (
+          SELECT *, ROW_NUMBER() OVER(ORDER BY (SELECT NULL)) as rn_order FROM (
+
+            SELECT * FROM (
+              SELECT *
+                FROM habit_recurrance
+                WHERE ${TableHabitRecurrance.weekday_id_fr} = ${currentTime.weekday} 
+                AND (
+                  ${TableHabitRecurrance.start_hour_fr} < ${currentTime.hour} 
+                  OR
+                  (
+                    ${TableHabitRecurrance.start_hour_fr} = ${currentTime.hour}
+                    AND
+                    ${TableHabitRecurrance.start_minute_fr} <= ${currentTime.minute} 
+                  )
+                )
+                AND (
+                  ${TableHabitRecurrance.end_hour_fr} > ${currentTime.hour} 
+                  OR
+                  (
+                    ${TableHabitRecurrance.end_hour_fr} = ${currentTime.hour}
+                    AND
+                    ${TableHabitRecurrance.end_minute_fr} > ${currentTime.minute} 
+                  )
+                )
+                ORDER BY ${TableHabitRecurrance.weekday_id_fr} ASC,
+                  ${TableHabitRecurrance.start_hour_fr} ASC,
+                  ${TableHabitRecurrance.start_minute_fr} ASC
+                LIMIT 1
+            )
+
+            UNION ALL
+
+            SELECT * FROM (
+              SELECT *
+                FROM habit_recurrance
+                WHERE ${TableHabitRecurrance.weekday_id_fr} = ${currentTime.weekday} 
+                AND ${TableHabitRecurrance.start_hour_fr} = ${currentTime.hour} 
+                AND ${TableHabitRecurrance.start_minute_fr} >= ${currentTime.minute} 
+                ORDER BY ${TableHabitRecurrance.weekday_id_fr} ASC,
+                  ${TableHabitRecurrance.start_hour_fr} ASC,
+                  ${TableHabitRecurrance.start_minute_fr} ASC
+            )
+
+            UNION ALL
+
+            SELECT * FROM (
+              SELECT *
+                FROM habit_recurrance
+                WHERE ${TableHabitRecurrance.weekday_id_fr} = ${currentTime.weekday} 
+                AND ${TableHabitRecurrance.start_hour_fr} > ${currentTime.hour} 
+                ORDER BY ${TableHabitRecurrance.weekday_id_fr} ASC,
+                  ${TableHabitRecurrance.start_hour_fr} ASC,
+                  ${TableHabitRecurrance.start_minute_fr} ASC
+            )
+
+            UNION ALL
+
+            SELECT * FROM (
+              SELECT *
+                FROM habit_recurrance
+                WHERE ${TableHabitRecurrance.weekday_id_fr} > ${currentTime.weekday} 
+                ORDER BY ${TableHabitRecurrance.weekday_id_fr} ASC,
+                  ${TableHabitRecurrance.start_hour_fr} ASC,
+                  ${TableHabitRecurrance.start_minute_fr} ASC
+            )
+            
+            UNION ALL
+
+            SELECT * FROM (
+              SELECT *
+                FROM habit_recurrance
+                WHERE ${TableHabitRecurrance.weekday_id_fr} < ${currentTime.weekday} 
+                ORDER BY ${TableHabitRecurrance.weekday_id_fr} ASC,
+                  ${TableHabitRecurrance.start_hour_fr} ASC,
+                  ${TableHabitRecurrance.start_minute_fr} ASC
+            )
+            
+            UNION ALL
+
+            SELECT * FROM (
+              SELECT *
+                FROM habit_recurrance
+                WHERE ${TableHabitRecurrance.weekday_id_fr} = ${currentTime.weekday} 
+                AND ${TableHabitRecurrance.start_hour_fr} < ${currentTime.hour} 
+                ORDER BY ${TableHabitRecurrance.weekday_id_fr} ASC,
+                  ${TableHabitRecurrance.start_hour_fr} ASC,
+                  ${TableHabitRecurrance.start_minute_fr} ASC
+            )
+
+            UNION ALL 
+
+            SELECT * FROM (
+              SELECT *
+                FROM habit_recurrance
+                WHERE ${TableHabitRecurrance.weekday_id_fr} = ${currentTime.weekday} 
+                AND ${TableHabitRecurrance.start_hour_fr} = ${currentTime.hour} 
+                AND ${TableHabitRecurrance.start_minute_fr} < ${currentTime.minute} 
+                ORDER BY ${TableHabitRecurrance.weekday_id_fr} ASC,
+                  ${TableHabitRecurrance.start_hour_fr} ASC,
+                  ${TableHabitRecurrance.start_minute_fr} ASC
+            )
+          )
+        )
+      )
+      SELECT *
+      FROM RankedResults
+      WHERE rn_duplicate = 1
+      ORDER BY rn_order ASC
+    ''';
+    var result = await db.select(sql);
+    return result;
+  }
+
   static Future deleteHabit(Habit habit) async {
     final db = await _db;
 

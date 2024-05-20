@@ -311,7 +311,6 @@ class _NewHabitDialogState extends State<NewHabitDialog> {
 
                           Navigator.of(context, rootNavigator: true).pop();
                           // TODO This delays the database transaction. It is better to split the transaction to smaller chunks so that other Futures don't starve.
-                          await Future.delayed(Durations.short4);
                           if (!_isCreationMode && _srcHabit.valid) {
                             await DatabaseHelper.deleteHabit(_srcHabit);
                           }

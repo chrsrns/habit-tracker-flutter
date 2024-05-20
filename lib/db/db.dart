@@ -42,7 +42,9 @@ Future<void> openDb() async {
         ${TableHabitRecurrance.end_hour_fr} TINYINT NOT NULL,
         ${TableHabitRecurrance.end_minute_fr} TINYINT NOT NULL,
         CONSTRAINT habit_recurrance_habit_fk 
-          FOREIGN KEY(${TableHabitRecurrance.habit_fr}) REFERENCES habits(${TableHabits.name}),
+          FOREIGN KEY(${TableHabitRecurrance.habit_fr}) 
+          REFERENCES habits(${TableHabits.name}) 
+          ON DELETE CASCADE,
         CONSTRAINT habit_recurrance_weekday_fk 
           FOREIGN KEY(
             ${TableHabitRecurrance.weekday_id_fr}, 
@@ -50,12 +52,13 @@ Future<void> openDb() async {
             ${TableHabitRecurrance.start_minute_fr}, 
             ${TableHabitRecurrance.end_hour_fr},
             ${TableHabitRecurrance.end_minute_fr}) 
-            REFERENCES recurrance(
-              ${TableRecurrance.weekday}, 
-              ${TableRecurrance.start_hour},
-              ${TableRecurrance.start_minute},
-              ${TableRecurrance.end_hour},
-              ${TableRecurrance.end_minute}),
+          REFERENCES recurrance(
+            ${TableRecurrance.weekday}, 
+            ${TableRecurrance.start_hour},
+            ${TableRecurrance.start_minute},
+            ${TableRecurrance.end_hour},
+            ${TableRecurrance.end_minute})
+          ON DELETE CASCADE,
         CONSTRAINT habit_recurrance_pk 
           PRIMARY KEY(
             ${TableHabitRecurrance.habit_fr}, 

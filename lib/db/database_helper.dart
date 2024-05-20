@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/material.dart';
 import 'package:sqlite3/common.dart';
 import 'package:sqlite3/common.dart' as sqlite3Com;
 import 'package:cohabit/db/db.dart';
@@ -12,8 +13,33 @@ class DatabaseHelper {
     return sqliteDb;
   }
 
+  static var _habitsSortedController = StreamController<ResultSet?>();
+  static StreamSubscription<void> _habitsSortedDelayer =
+      Future.value().asStream().listen((_) {});
+  static Future<void> _updateHabitsSorted() async {
+    await _habitsSortedDelayer.cancel();
+    _habitsSortedDelayer =
+        Future.delayed(Durations.short1).asStream().listen((event) async {
+      var retrievedHabitsSorted = await retrieveHabitsSorted();
+      _habitsSortedController.add(retrievedHabitsSorted);
+    });
+  }
+
+  static Stream<ResultSet?> get habitsSorted => _habitsSortedController.stream;
+
   static Future<void> initDB() async {
     await openDb();
+    final db = await _db;
+
+    await _updateHabitsSorted();
+    db.updates.listen((event) async {
+      print("[${DateTime.now()}] Updates on database");
+      if (event.tableName == "habit_recurrance") {
+        print("[${DateTime.now()}] Updates on habit_recurrance");
+        await _updateHabitsSorted();
+      }
+    });
+
     return;
   }
 

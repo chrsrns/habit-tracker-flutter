@@ -366,10 +366,11 @@ class DatabaseHelper {
   static Future deleteHabitByName(String habit) async {
     final db = await _db;
 
-    db.execute('''
+    var sql = '''
       PRAGMA foreign_keys = ON;
       DELETE FROM habits WHERE name='${habit}';
-    ''');
+    ''';
+    db.execute(sql);
   }
 
   static Future<Habit?> get upcomingHabit async {

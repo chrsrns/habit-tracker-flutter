@@ -30,7 +30,7 @@ class _HabitListPageState extends State<HabitListPage> {
 
   void updateOngoingHabit() async {
     await delayer.cancel();
-    delayer = Future.delayed(Durations.long1).asStream().listen((event) async {
+    delayer = Future.delayed(Durations.short1).asStream().listen((event) async {
       var ongoingHabits = await DatabaseHelper.ongoingHabit;
       var habitOrNull = ongoingHabits.firstOrNull;
       setState(() {

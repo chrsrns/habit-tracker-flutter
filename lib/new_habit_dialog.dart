@@ -177,12 +177,13 @@ class _NewHabitDialogState extends State<NewHabitDialog> {
                           items: list,
                           value: weekday,
                           onChanged: (dropdownValue) {
-                            if (dropdownValue is Weekday)
-                              setState(() {
-                                updateWeekdayOfPair(
-                                    Weekday.fromInt(recurrance_pair.key),
-                                    dropdownValue);
-                              });
+                            if (dropdownValue is Weekday &&
+                                dropdownValue != weekday) {
+                              updateWeekdayOfPair(
+                                  Weekday.fromInt(recurrance_pair.key),
+                                  dropdownValue);
+                            }
+                            ;
                           },
                         ),
                       ),

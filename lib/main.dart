@@ -37,7 +37,7 @@ class _MainAppState extends State<MainApp> {
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepOrange),
       ),
-      home: const HomePage(title: 'CoHabit'),
+      home: HomePage(title: 'CoHabit'),
     );
   }
 }

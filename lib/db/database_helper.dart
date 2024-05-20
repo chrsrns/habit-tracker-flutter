@@ -110,13 +110,12 @@ class DatabaseHelper {
     if (!habit.valid) return false;
     final db = await _db;
 
-    db.execute(
-      """
-        PRAGMA foreign_keys = ON;
+    db.execute("BEGIN;");
+
+    db.execute("""
         INSERT INTO habits(name) VALUES('${habit.name}')
           ON CONFLICT DO NOTHING;
-      """,
-    );
+      """);
 
     for (var weekday in habit.recurrances.keys) {
       final times = habit.recurrances[weekday];
@@ -156,11 +155,10 @@ class DatabaseHelper {
           """;
         // print("[Executing insert SQL]");
         // print(sql);
-        db.execute(
-          sql,
-        );
+        db.execute(sql);
       }
     }
+    db.execute("COMMIT;");
 
     return true; //TODO Aggregate all the results to one
   }

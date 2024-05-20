@@ -35,8 +35,6 @@ class _HabitListPageState extends State<HabitListPage> {
       var habitOrNull = ongoingHabits.firstOrNull;
       setState(() {
         ongoingHabit = habitOrNull;
-        print(
-            "[${DateTime.now()} Ongoing Habit: ${ongoingHabit?.toJsonString()}");
       });
     });
   }

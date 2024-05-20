@@ -33,8 +33,8 @@ class DatabaseHelper {
             habitRow['${TableHabitRecurrance.start_hour_fr}'] as int;
         var startMinute =
             habitRow['${TableHabitRecurrance.start_minute_fr}'] as int;
-        _updateOnHabitStart =
-            cron.schedule(Schedule(hours: startHour, minutes: startMinute), () {
+        _updateOnHabitStart = _cron
+            .schedule(Schedule(hours: startHour, minutes: startMinute), () {
           _updateOnHabitStart?.cancel();
           print("[${DateTime.now()}] Updating streams");
           _updateHabitsSorted();
@@ -63,7 +63,7 @@ class DatabaseHelper {
             ?.first;
         if (recurranceOrNull != null) {
           print("[${DateTime.now()}] Schedule on end of ongoing habit");
-          _updateOnHabitEnd = cron.schedule(
+          _updateOnHabitEnd = _cron.schedule(
               Schedule(
                   hours: recurranceOrNull.endHour,
                   minutes: recurranceOrNull.endMinute), () {

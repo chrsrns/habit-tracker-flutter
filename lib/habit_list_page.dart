@@ -3,12 +3,14 @@ import 'dart:collection';
 
 import 'package:cohabit/db/db_habit.dart';
 import 'package:cohabit/db/table_columns.dart';
+import 'package:cohabit/db/weekdays_enum.dart';
 import 'package:cohabit/new_habit_dialog.dart';
 import 'package:cron/cron.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/material.dart' as material;
 import 'package:sqlite3/common.dart' as sqlite;
 import 'package:cohabit/db/database_helper.dart';
+import 'package:sqlite3/sqlite3.dart';
 
 class HabitListPage extends StatefulWidget {
   const HabitListPage({super.key});
@@ -25,6 +27,7 @@ class _HabitListPageState extends State<HabitListPage> {
   bool _isLoading = true;
   Habit? ongoingHabit;
   StreamSubscription<void> delayer = Future.value().asStream().listen((_) {});
+  StreamSubscription<ResultSet?>? _habitsSortedSubscription;
   Cron cron = Cron();
   ScheduledTask? currentSchedule = null;
 
@@ -43,29 +46,15 @@ class _HabitListPageState extends State<HabitListPage> {
   void initState() {
     super.initState();
     // TODO  remove delay at some point
-    _habitData = Future.delayed(
-            Duration(seconds: 0), (() => DatabaseHelper.retrieveHabits()))
-        .whenComplete(() => setState(() {
-              _isLoading = false;
-              // print(_isLoading);
-            }));
+    _habitsSortedSubscription = DatabaseHelper.habitsSorted.listen((event) {
+      _habitData = Future.value(event);
+      setState(() {
+        _isLoading = false;
+      });
+    });
 
     updateOngoingHabit();
-    DatabaseHelper.updates.then((value) => value
-      ..listen((event) {
-        _habitData = Future.delayed(
-                Duration(seconds: 0), (() => DatabaseHelper.retrieveHabits()))
-            .whenComplete(() => setState(() {
-                  setState(() {
-                    _isLoading = false;
-                  });
-                  // print(_isLoading);
-                }));
 
-        if (event.tableName == "habit_recurrance") {
-          updateOngoingHabit();
-        }
-      }));
     currentSchedule = cron.schedule(Schedule.parse("*/1 * * * *"), () {
       updateOngoingHabit();
     });
@@ -74,6 +63,7 @@ class _HabitListPageState extends State<HabitListPage> {
   @override
   void dispose() {
     super.dispose();
+    _habitsSortedSubscription?.cancel();
     currentSchedule?.cancel();
     cron.close();
     delayer.cancel();

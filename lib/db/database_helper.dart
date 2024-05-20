@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cron/cron.dart';
 import 'package:flutter/material.dart';
 import 'package:sqlite3/common.dart';
 import 'package:sqlite3/common.dart' as sqlite3Com;
@@ -9,10 +10,12 @@ import 'package:cohabit/db/db_time_range.dart';
 import 'package:cohabit/db/table_columns.dart';
 
 class DatabaseHelper {
+  static Cron _cron = Cron();
   static Future<CommonDatabase> get _db async {
     return sqliteDb;
   }
 
+  static ResultSet? _habitsSortedCache;
   static var _habitsSortedController = StreamController<ResultSet?>();
   static StreamSubscription<void> _habitsSortedDelayer =
       Future.value().asStream().listen((_) {});
@@ -21,25 +24,80 @@ class DatabaseHelper {
     _habitsSortedDelayer =
         Future.delayed(Durations.short1).asStream().listen((event) async {
       var retrievedHabitsSorted = await retrieveHabitsSorted();
+      _habitsSortedCache = retrievedHabitsSorted;
+
+      var habitRow = _habitsSortedCache?.firstOrNull;
+      if (_habitsSortedCache != null && habitRow != null) {
+        print("[${DateTime.now()}] Schedule on start of upcoming habit");
+        var startHour =
+            habitRow['${TableHabitRecurrance.start_hour_fr}'] as int;
+        var startMinute =
+            habitRow['${TableHabitRecurrance.start_minute_fr}'] as int;
+        _updateOnHabitStart =
+            cron.schedule(Schedule(hours: startHour, minutes: startMinute), () {
+          _updateOnHabitStart?.cancel();
+          print("[${DateTime.now()}] Updating streams");
+          _updateHabitsSorted();
+          _updateOngoingHabit();
+        });
+      }
       _habitsSortedController.add(retrievedHabitsSorted);
     });
   }
 
   static Stream<ResultSet?> get habitsSorted => _habitsSortedController.stream;
 
+  static Habit? _ongoingHabitCache;
+  static var _ongoingHabitController = StreamController<List<Habit>?>();
+  static StreamSubscription<void> _ongoingHabitDelayer =
+      Future.value().asStream().listen((_) {});
+  static Future<void> _updateOngoingHabit() async {
+    await _ongoingHabitDelayer.cancel();
+    _ongoingHabitDelayer =
+        Future.delayed(Durations.short1).asStream().listen((event) async {
+      var retrievedOngoingHabit = await _ongoingHabit;
+      _ongoingHabitCache = retrievedOngoingHabit.firstOrNull;
+      if (_ongoingHabitCache != null) {
+        var recurranceOrNull = _ongoingHabitCache
+            ?.recurrances[_ongoingHabitCache?.recurrances.keys.firstOrNull]
+            ?.first;
+        if (recurranceOrNull != null) {
+          print("[${DateTime.now()}] Schedule on end of ongoing habit");
+          _updateOnHabitEnd = cron.schedule(
+              Schedule(
+                  hours: recurranceOrNull.endHour,
+                  minutes: recurranceOrNull.endMinute), () {
+            _updateOnHabitEnd?.cancel();
+            print("[${DateTime.now()}] Updating streams");
+            _updateHabitsSorted();
+            _updateOngoingHabit();
+          });
+        }
+      }
+      _ongoingHabitController.add(retrievedOngoingHabit);
+    });
+  }
+
+  static Stream<List<Habit>?> get ongoingHabit =>
+      _ongoingHabitController.stream;
+
+  static ScheduledTask? _updateOnHabitStart = null;
+  static ScheduledTask? _updateOnHabitEnd = null;
+
   static Future<void> initDB() async {
     await openDb();
     final db = await _db;
 
-    await _updateHabitsSorted();
+    _updateHabitsSorted();
+    _updateOngoingHabit();
     db.updates.listen((event) async {
       print("[${DateTime.now()}] Updates on database");
       if (event.tableName == "habit_recurrance") {
         print("[${DateTime.now()}] Updates on habit_recurrance");
-        await _updateHabitsSorted();
+        _updateOngoingHabit();
+        _updateHabitsSorted();
       }
     });
-
     return;
   }
 
@@ -423,7 +481,7 @@ class DatabaseHelper {
     return null;
   }
 
-  static Future<List<Habit>> get ongoingHabit async {
+  static Future<List<Habit>> get _ongoingHabit async {
     final db = await _db;
     final currentTime = DateTime.now();
 

@@ -88,13 +88,6 @@ class _HabitListPageState extends State<HabitListPage> {
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
             ),
           ),
-          if (ongoingHabit != null)
-            Row(
-              children: [
-                Text("Ongoing Habit: "),
-                Text(ongoingHabit?.name ?? "")
-              ],
-            ),
           Divider(),
           FutureBuilder<sqlite.ResultSet>(
             future: _habitData,
@@ -153,6 +146,14 @@ class _HabitListPageState extends State<HabitListPage> {
     if (data != null) {
       for (var habitRow in data) {
         var habitName = habitRow['${TableHabitRecurrance.habit_fr}'] as String;
+        var weekday = habitRow['${TableHabitRecurrance.weekday_id_fr}'] as int;
+        var startHour =
+            habitRow['${TableHabitRecurrance.start_hour_fr}'] as int;
+        var startMinute =
+            habitRow['${TableHabitRecurrance.start_minute_fr}'] as int;
+        var endHour = habitRow['${TableHabitRecurrance.end_hour_fr}'] as int;
+        var endMinute =
+            habitRow['${TableHabitRecurrance.end_minute_fr}'] as int;
         if (habits.contains(habitName)) continue;
 
         habits.add(habitName);
@@ -189,14 +190,80 @@ class _HabitListPageState extends State<HabitListPage> {
             )
           ],
         );
+        late Widget habitText;
+        late Card paddedChip;
+        late Color cardColor;
+        if (ongoingHabit?.name == habitName) {
+          habitText = IntrinsicWidth(
+              child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(style: TextStyle(fontSize: 12), "Ongoing Habit"),
+              Text(style: TextStyle(fontWeight: FontWeight.bold), habitName),
+            ],
+          ));
+          paddedChip = Card(
+            margin: EdgeInsets.all(0),
+            color: Colors.white,
+            child: Padding(
+              padding: const EdgeInsets.all(8),
+              child: Wrap(
+                spacing: 4,
+                crossAxisAlignment: WrapCrossAlignment.end,
+                key: ValueKey(habitName),
+                children: [
+                  Text(style: TextStyle(fontSize: 12), "Habit ends in: "),
+                  Text(
+                      style: TextStyle(fontSize: 12),
+                      TimeOfDay(hour: endHour, minute: endMinute)
+                          .format(context)),
+                ],
+              ),
+            ),
+          );
+          cardColor = Theme.of(context).colorScheme.tertiaryContainer;
+        } else {
+          habitText = Text(habitName);
+          paddedChip = Card(
+            margin: EdgeInsets.all(0),
+            color: Colors.white,
+            child: Padding(
+              padding: const EdgeInsets.all(8),
+              child: Wrap(
+                spacing: 4,
+                crossAxisAlignment: WrapCrossAlignment.end,
+                key: ValueKey(habitName),
+                children: [
+                  Text(style: TextStyle(fontSize: 12), "Next Start: "),
+                  Text(
+                      style: TextStyle(fontSize: 12),
+                      Weekday.fromInt(weekday).label),
+                  Text(
+                      style: TextStyle(fontSize: 12),
+                      TimeOfDay(hour: startHour, minute: startMinute)
+                          .format(context)),
+                ],
+              ),
+            ),
+          );
+          cardColor = Theme.of(context).colorScheme.surface;
+        }
         result.add(Card(
+          color: cardColor,
           elevation: 5,
           child: Padding(
             padding: const EdgeInsets.all(4.0),
             child: ListTile(
-                // tileColor:
-                //     Theme.of(context).colorScheme.secondaryContainer,
-                title: Text(habitName),
+                title: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(left: 4, bottom: 4),
+                      child: habitText,
+                    ),
+                    paddedChip
+                  ],
+                ),
                 trailing: trailingButtonRow),
           ),
         ));

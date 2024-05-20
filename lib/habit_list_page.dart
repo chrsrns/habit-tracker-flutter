@@ -26,21 +26,10 @@ class _HabitListPageState extends State<HabitListPage> {
 
   bool _isLoading = true;
   Habit? ongoingHabit;
-  StreamSubscription<void> delayer = Future.value().asStream().listen((_) {});
-  StreamSubscription<ResultSet?>? _habitsSortedSubscription;
   Cron cron = Cron();
-  ScheduledTask? currentSchedule = null;
-
-  void updateOngoingHabit() async {
-    await delayer.cancel();
-    delayer = Future.delayed(Durations.short1).asStream().listen((event) async {
-      var ongoingHabits = await DatabaseHelper.ongoingHabit;
-      var habitOrNull = ongoingHabits.firstOrNull;
-      setState(() {
-        ongoingHabit = habitOrNull;
-      });
-    });
-  }
+  StreamSubscription<ResultSet?>? _habitsSortedSubscription;
+  StreamSubscription<List<Habit>?>? _ongoingHabitSubscription;
+  ScheduledTask? onOngoingHabitEnd = null;
 
   @override
   void initState() {
@@ -53,10 +42,11 @@ class _HabitListPageState extends State<HabitListPage> {
       });
     });
 
-    updateOngoingHabit();
-
-    currentSchedule = cron.schedule(Schedule.parse("*/1 * * * *"), () {
-      updateOngoingHabit();
+    _ongoingHabitSubscription = DatabaseHelper.ongoingHabit.listen((event) {
+      var habitOrNull = event?.firstOrNull;
+      setState(() {
+        ongoingHabit = habitOrNull;
+      });
     });
   }
 
@@ -64,9 +54,8 @@ class _HabitListPageState extends State<HabitListPage> {
   void dispose() {
     super.dispose();
     _habitsSortedSubscription?.cancel();
-    currentSchedule?.cancel();
-    cron.close();
-    delayer.cancel();
+    _ongoingHabitSubscription?.cancel();
+    onOngoingHabitEnd?.cancel();
   }
 
   @override

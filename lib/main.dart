@@ -1,6 +1,6 @@
+import 'package:cohabit/landing_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:cohabit/db/database_helper.dart';
-import 'package:cohabit/home_page.dart';
 
 Future<void> main() async {
   // WidgetsFlutterBinding.ensureInitialized();
@@ -35,7 +35,7 @@ class _MainAppState extends State<MainApp> {
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepOrange),
       ),
-      home: HomePage(title: 'CoHabit'),
+      home: LandingScreen(onSplashDone: () {}),
     );
   }
 }

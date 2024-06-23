@@ -65,6 +65,7 @@ class DatabaseHelper {
     if (_habitsSortedStored == null) {
       _habitsSortedStored = _habitsSortedController.stream.asBroadcastStream();
     }
+    // TODO May not work as expected on multiple listeners. Instead add a getter for the cached data
     _habitsSortedController.add(_habitsSortedCache);
     return _habitsSortedStored!;
   }
@@ -107,6 +108,7 @@ class DatabaseHelper {
     if (_ongoingHabitStored == null) {
       _ongoingHabitStored = _ongoingHabitController.stream.asBroadcastStream();
     }
+    // TODO May not work as expected on multiple listeners. Instead add a getter for the cached data
     _ongoingHabitController.add(_ongoingHabitsCache);
     return _ongoingHabitStored!;
   }

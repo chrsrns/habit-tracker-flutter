@@ -9,6 +9,21 @@ import 'package:cohabit/db/db_habit.dart';
 import 'package:cohabit/db/db_time_range.dart';
 import 'package:cohabit/db/table_columns.dart';
 
+/*
+  Implementation of the ongoingHabit and habitsSorted does not make sense, now 
+  looking at it. Since the habitsSorted includes the ongoingHabit, it would need
+  to also be periodically updated. But, the idea that I had that the habitSorted
+  only updates on database changes.
+
+  I have a few actiona to choose from.
+  - The habitSorted would not need to include the ongoing habit, and that the 
+  displaying of the ongoing habit is to be processed by the application instead 
+  via sql.
+  - The implementation is to stay as is, updating the stream periodically.
+  - The implementation is to be improved, where they would only update on the 
+  following conditions: on end of an ongoing habit, on start of a habit, on 
+  database updates,
+*/
 class DatabaseHelper {
   static Cron _cron = Cron();
   static Future<CommonDatabase> get _db async {

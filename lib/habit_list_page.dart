@@ -20,7 +20,7 @@ class HabitListPage extends StatefulWidget {
 }
 
 class _HabitListPageState extends State<HabitListPage> {
-  // TODO Replace with actual data
+  // TODO This no longer needs to be a Future. Should be replaced.
   Future<sqlite.ResultSet?> _habitData =
       Future.value(sqlite.ResultSet([], [], []));
 

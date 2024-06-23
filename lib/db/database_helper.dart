@@ -45,9 +45,17 @@ class DatabaseHelper {
     });
   }
 
-  static Stream<ResultSet?> get habitsSorted => _habitsSortedController.stream;
+  static Stream<ResultSet?>? _habitsSortedStored;
+  static Stream<ResultSet?> get habitsSorted {
+    if (_habitsSortedStored == null) {
+      _habitsSortedStored = _habitsSortedController.stream.asBroadcastStream();
+    }
+    _habitsSortedController.add(_habitsSortedCache);
+    return _habitsSortedStored!;
+  }
 
   static Habit? _ongoingHabitCache;
+  static List<Habit>? _ongoingHabitsCache;
   static var _ongoingHabitController = StreamController<List<Habit>?>();
   static StreamSubscription<void> _ongoingHabitDelayer =
       Future.value().asStream().listen((_) {});
@@ -56,6 +64,7 @@ class DatabaseHelper {
     _ongoingHabitDelayer =
         Future.delayed(Durations.short1).asStream().listen((event) async {
       var retrievedOngoingHabit = await _ongoingHabit;
+      _ongoingHabitsCache = retrievedOngoingHabit;
       _ongoingHabitCache = retrievedOngoingHabit.firstOrNull;
       if (_ongoingHabitCache != null) {
         var recurranceOrNull = _ongoingHabitCache
@@ -78,8 +87,14 @@ class DatabaseHelper {
     });
   }
 
-  static Stream<List<Habit>?> get ongoingHabit =>
-      _ongoingHabitController.stream;
+  static Stream<List<Habit>?>? _ongoingHabitStored;
+  static Stream<List<Habit>?> get ongoingHabit {
+    if (_ongoingHabitStored == null) {
+      _ongoingHabitStored = _ongoingHabitController.stream.asBroadcastStream();
+    }
+    _ongoingHabitController.add(_ongoingHabitsCache);
+    return _ongoingHabitStored!;
+  }
 
   static ScheduledTask? _updateOnHabitStart = null;
   static ScheduledTask? _updateOnHabitEnd = null;

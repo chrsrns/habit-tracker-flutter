@@ -21,7 +21,7 @@ class HabitListPage extends StatefulWidget {
 
 class _HabitListPageState extends State<HabitListPage> {
   // TODO Replace with actual data
-  Future<sqlite.ResultSet> _habitData =
+  Future<sqlite.ResultSet?> _habitData =
       Future.value(sqlite.ResultSet([], [], []));
 
   bool _isLoading = true;
@@ -78,12 +78,13 @@ class _HabitListPageState extends State<HabitListPage> {
             ),
           ),
           Divider(),
-          FutureBuilder<sqlite.ResultSet>(
+          FutureBuilder<sqlite.ResultSet?>(
             future: _habitData,
             builder: (BuildContext context,
-                AsyncSnapshot<sqlite.ResultSet> snapshot) {
+                AsyncSnapshot<sqlite.ResultSet?> snapshot) {
               Widget childWidget;
-              if (snapshot.hasData && !_isLoading) {
+              print("snapshot.hasData: ${snapshot.hasData}");
+              if (snapshot.hasData) {
                 childWidget =
                     ListView(children: renderListData(snapshot, deleteHabit));
               } else if (snapshot.hasError) {
@@ -127,7 +128,7 @@ class _HabitListPageState extends State<HabitListPage> {
     );
   }
 
-  List<Widget> renderListData(AsyncSnapshot<sqlite.ResultSet> snapshot,
+  List<Widget> renderListData(AsyncSnapshot<sqlite.ResultSet?> snapshot,
       void deleteHabit(String habit)) {
     var data = snapshot.data;
     var habits = HashSet<String>();

@@ -24,7 +24,6 @@ class _HabitListPageState extends State<HabitListPage> {
   Future<sqlite.ResultSet?> _habitData =
       Future.value(sqlite.ResultSet([], [], []));
 
-  bool _isLoading = true;
   Habit? ongoingHabit;
   Cron cron = Cron();
   StreamSubscription<ResultSet?>? _habitsSortedSubscription;
@@ -37,9 +36,6 @@ class _HabitListPageState extends State<HabitListPage> {
     // TODO  remove delay at some point
     _habitsSortedSubscription = DatabaseHelper.habitsSorted.listen((event) {
       _habitData = Future.value(event);
-      setState(() {
-        _isLoading = false;
-      });
     });
 
     _ongoingHabitSubscription = DatabaseHelper.ongoingHabit.listen((event) {

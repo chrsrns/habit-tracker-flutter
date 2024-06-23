@@ -1,6 +1,6 @@
 import 'package:sqlite3/common.dart' show CommonDatabase;
 import 'package:cohabit/db/table_columns.dart';
-import 'sqlite3/sqlite3.dart' show openSqliteDb;
+import 'package:cohabit/db/sqlite3/sqlite3.dart' show openSqliteDb;
 
 late CommonDatabase sqliteDb;
 

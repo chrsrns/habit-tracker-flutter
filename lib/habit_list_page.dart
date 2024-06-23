@@ -10,7 +10,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/material.dart' as material;
 import 'package:sqlite3/common.dart' as sqlite;
 import 'package:cohabit/db/database_helper.dart';
-import 'package:sqlite3/sqlite3.dart';
 
 class HabitListPage extends StatefulWidget {
   const HabitListPage({super.key});
@@ -26,7 +25,7 @@ class _HabitListPageState extends State<HabitListPage> {
 
   Habit? ongoingHabit;
   Cron cron = Cron();
-  StreamSubscription<ResultSet?>? _habitsSortedSubscription;
+  StreamSubscription<sqlite.ResultSet?>? _habitsSortedSubscription;
   StreamSubscription<List<Habit>?>? _ongoingHabitSubscription;
   ScheduledTask? onOngoingHabitEnd = null;
 

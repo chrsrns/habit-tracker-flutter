@@ -32,7 +32,6 @@ class _HabitListPageState extends State<HabitListPage> {
   @override
   void initState() {
     super.initState();
-    // TODO  remove delay at some point
     _habitsSortedSubscription = DatabaseHelper.habitsSorted.listen((event) {
       _habitData = Future.value(event);
     });

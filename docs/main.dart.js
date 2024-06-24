@@ -45836,7 +45836,7 @@ $S:357}
 A.yT.prototype={
 ad(){return new A.RC(B.i)}}
 A.RC.prototype={
-H(a){return new A.yY(new A.yC(null),"The Flutter Demo",A.BH(null,A.aH5(B.af,B.Ks),!0),null)}}
+H(a){return new A.yY(new A.yC(null),"CoHabit",A.BH(null,A.aH5(B.af,B.Ks),!0),null)}}
 A.il.prototype={}
 A.kD.prototype={
 ad(){return A.aN4(this.c)}}

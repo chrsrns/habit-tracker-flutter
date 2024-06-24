@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cohabit/db/table_columns.dart';
 import 'package:cohabit/new_habit_dialog.dart';
 import 'package:cron/cron.dart';
 import 'package:flutter/material.dart';
@@ -78,8 +79,7 @@ class _HomePageState extends State<HomePage> {
 
     newSchedule();
     DatabaseHelper.updates.then((value) => value.listen((event) {
-          // TODO Table names should have an enum
-          if (event.tableName == "habit_recurrance") {
+          if (event.tableName == TableNames.habit_recurrance.name) {
             newSchedule();
           }
         }));

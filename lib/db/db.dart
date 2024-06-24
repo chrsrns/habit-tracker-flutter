@@ -18,10 +18,10 @@ Future<void> openDb() async {
     var sql = '''
       BEGIN;
 
-      CREATE TABLE habits (
+      CREATE TABLE ${TableNames.habits} (
         ${TableHabits.name} VARCHAR(200) PRIMARY KEY
       );
-      CREATE TABLE recurrance (
+      CREATE TABLE ${TableNames.recurrance} (
         ${TableRecurrance.weekday} TINYINT NOT NULL,
         ${TableRecurrance.start_hour} TINYINT NOT NULL,
         ${TableRecurrance.start_minute} TINYINT NOT NULL,
@@ -34,7 +34,7 @@ Future<void> openDb() async {
           ${TableRecurrance.end_hour}, 
           ${TableRecurrance.end_minute})
       );
-      CREATE TABLE habit_recurrance (
+      CREATE TABLE ${TableNames.habit_recurrance} (
         ${TableHabitRecurrance.habit_fr} INTEGER NOT NULL,
         ${TableHabitRecurrance.weekday_id_fr} TINYINT NOT NULL,
         ${TableHabitRecurrance.start_hour_fr} TINYINT NOT NULL,

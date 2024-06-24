@@ -1,3 +1,12 @@
+enum TableNames {
+  habits,
+  recurrance,
+  habit_recurrance;
+
+  @override
+  String toString() => this.name;
+}
+
 enum TableHabits {
   name;
 

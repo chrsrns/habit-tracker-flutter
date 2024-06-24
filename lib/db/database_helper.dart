@@ -124,7 +124,7 @@ class DatabaseHelper {
     _updateOngoingHabit();
     db.updates.listen((event) async {
       print("[${DateTime.now()}] Updates on database");
-      if (event.tableName == "habit_recurrance") {
+      if (event.tableName == TableNames.habit_recurrance.name) {
         print("[${DateTime.now()}] Updates on habit_recurrance");
         _updateOngoingHabit();
         _updateHabitsSorted();

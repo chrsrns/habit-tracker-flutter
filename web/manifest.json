@@ -1,6 +1,6 @@
 {
-  "name": "testapp",
-  "short_name": "testapp",
+  "name": "CoHabit",
+  "short_name": "CoHabit",
   "start_url": ".",
   "display": "standalone",
   "background_color": "#0175C2",

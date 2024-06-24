@@ -144,8 +144,8 @@ class _NewHabitDialogState extends State<NewHabitDialog> {
           )
         ];
         final buttonStyle = ButtonStyle(
-            backgroundColor: MaterialStateProperty.all(Colors.white),
-            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+            backgroundColor: WidgetStateProperty.all(Colors.white),
+            shape: WidgetStateProperty.all<RoundedRectangleBorder>(
                 RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(4))));
         return Row(

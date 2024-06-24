@@ -233,15 +233,15 @@ class _NewHabitDialogState extends State<NewHabitDialog> {
                         SizedBox(height: 8),
                         Divider(),
                         (BuildContext context) {
-                          // TODO rename
-                          final entriesList = getEntriesList(context);
+                          final habitRecurranceEntries =
+                              getEntriesList(context);
                           return Expanded(
                             child: ListView.separated(
                               scrollDirection: Axis.vertical,
                               shrinkWrap: true,
-                              itemCount: entriesList.length,
+                              itemCount: habitRecurranceEntries.length,
                               itemBuilder: (context, index) {
-                                return entriesList[index];
+                                return habitRecurranceEntries[index];
                               },
                               separatorBuilder: (context, index) => Divider(),
                             ),

@@ -25,7 +25,22 @@ class _LandingScreenState extends State<LandingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return const Scaffold(
+      body: Center(
+        child: IntrinsicHeight(
+          child: Column(
+            children: [
+              Text(
+                "CoHabit",
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
+              ),
+              SizedBox(height: 4),
+              Text("Your habit tracking companion")
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
 

@@ -29,11 +29,11 @@ class TimeRange {
     final endTimeObj = DateTime(0, 1, 1, endHour, endMinute);
 
     var startTimeStr = startTimeObj.toIso8601String().split('T')[1];
-    if (startTimeStr != null && startTimeStr.length > 0) {
+    if (startTimeStr.length > 0) {
       startTimeStr = startTimeStr.substring(0, startTimeStr.length - 1);
     }
     var endTimeStr = endTimeObj.toIso8601String().split('T')[1];
-    if (endTimeStr != null && endTimeStr.length > 0) {
+    if (endTimeStr.length > 0) {
       endTimeStr = endTimeStr.substring(0, endTimeStr.length - 1);
     }
 

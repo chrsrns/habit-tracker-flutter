@@ -21,7 +21,7 @@ class _MainAppState extends State<MainApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'The Flutter Demo',
+      title: 'CoHabit',
       theme: ThemeData(
         // This is the theme of your application.
         //

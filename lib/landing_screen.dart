@@ -14,9 +14,12 @@ class _LandingScreenState extends State<LandingScreen> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(Duration(milliseconds: 1500)).whenComplete(() {
-      // widget.onSplashDone();
-      Navigator.of(context).pushReplacement(_createRoute());
+    _buildPageAsync().then((wgt) {
+      Future.delayed(Duration(milliseconds: 1500)).whenComplete(() async {
+        final route = _createRoute(wgt);
+        // widget.onSplashDone();
+        Navigator.of(context).pushReplacement(route);
+      });
     });
   }
 
@@ -26,10 +29,15 @@ class _LandingScreenState extends State<LandingScreen> {
   }
 }
 
-Route _createRoute() {
+Future<Widget> _buildPageAsync() async {
+  return Future.microtask(() {
+    return HomePage(title: "CoHabit");
+  });
+}
+
+Route _createRoute(Widget wgt) {
   return PageRouteBuilder(
-      pageBuilder: (context, animation, secondaryAnimation) =>
-          const HomePage(title: "CoHabit"),
+      pageBuilder: (context, animation, secondaryAnimation) => wgt,
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
         const begin = Offset(0.0, 1.0);
         const end = Offset.zero;

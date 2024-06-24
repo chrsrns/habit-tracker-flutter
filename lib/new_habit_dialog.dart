@@ -135,19 +135,7 @@ class _NewHabitDialogState extends State<NewHabitDialog> {
             padding: const EdgeInsets.symmetric(horizontal: 22),
             child: ElevatedButton(
                 onPressed: () {
-                  if (weekday == null) {
-                    ScaffoldMessenger.of(ctx).showSnackBar(
-                      SnackBar(
-                        content: const Text('Select weekday on the left first'),
-                        duration: const Duration(seconds: 3),
-                        action: SnackBarAction(
-                          label: 'ACTION',
-                          onPressed: () {},
-                        ),
-                      ),
-                    );
-                  } else
-                    showTimeRangePickers(buildctx, timeRanges);
+                  showTimeRangePickers(buildctx, timeRanges);
                 },
                 child: Padding(
                     padding:

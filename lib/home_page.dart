@@ -183,7 +183,13 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
         floatingActionButton: FloatingActionButton(
-          onPressed: () => print("TODO"), //TODO Implement properly
+          onPressed: () {
+            showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return NewHabitDialog();
+                });
+          },
           tooltip: 'Increment',
           child: const Icon(Icons.add),
         ),

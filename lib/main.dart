@@ -32,7 +32,7 @@ class _MainAppState extends State<MainApp> {
       darkTheme: ThemeData(
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(
-            seedColor: Colors.deepOrangeAccent, brightness: Brightness.dark),
+            seedColor: Colors.deepOrange, brightness: Brightness.dark),
       ),
       themeMode: _themeMode,
       home: LandingScreen(onSplashDone: () {}),

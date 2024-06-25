@@ -63,8 +63,9 @@ class _NewHabitDialogState extends State<NewHabitDialog> {
 
   @override
   Widget build(BuildContext buildctx) {
+    var appWidth = MediaQuery.of(buildctx).size.width;
+
     final dialogWidth = () {
-      var appWidth = MediaQuery.of(buildctx).size.width;
       if (appWidth >= 700)
         return appWidth - 250;
       else
@@ -160,7 +161,7 @@ class _NewHabitDialogState extends State<NewHabitDialog> {
                     children: [
                       IntrinsicWidth(
                         child: DropdownButton(
-                          padding: EdgeInsets.only(left: 8, right: 8),
+                          padding: EdgeInsets.only(left: 8),
                           hint: Text("Select weekday"),
                           items: list,
                           value: weekday,
@@ -216,103 +217,124 @@ class _NewHabitDialogState extends State<NewHabitDialog> {
             child: GestureDetector(
               onTap: () {},
               child: AlertDialog(
+                shape: () {
+                  if (appWidth < 425)
+                    return LinearBorder();
+                  else
+                    return RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(4)));
+                }(),
+                insetPadding: () {
+                  if (appWidth < 425)
+                    return EdgeInsets.zero;
+                  else
+                    return EdgeInsets.symmetric(
+                        horizontal: 40.0, vertical: 24.0);
+                }(),
                 title: Text(_isCreationMode
                     ? "Create New Habit"
                     : "Modifying this Habit"),
-                content: Center(
-                  child: SizedBox(
-                    // TODO add animation to this dynamic sizing
-                    width: dialogWidth,
-                    child: Column(
-                      children: [
-                        TextField(
-                          decoration: InputDecoration(
-                            border: OutlineInputBorder(),
-                            hintText: 'Name of new habit',
-                          ),
-                          controller: habitNameController,
-                        ),
-                        SizedBox(height: 8),
-                        Divider(),
-                        (BuildContext context) {
-                          final habitRecurranceEntries =
-                              getEntriesList(context);
-                          return Expanded(
-                            child: ListView.separated(
-                              scrollDirection: Axis.vertical,
-                              shrinkWrap: true,
-                              itemCount: habitRecurranceEntries.length,
-                              itemBuilder: (context, index) {
-                                return habitRecurranceEntries[index];
-                              },
-                              separatorBuilder: (context, index) => Divider(),
-                            ),
-                          );
-                        }(scaffoldMessengerCtx),
-                      ],
-                    ),
-                  ),
-                ),
-                actions: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 4),
-                    child: TextButton(
-                        onPressed: () {
-                          Navigator.of(context, rootNavigator: true).pop();
-                        },
-                        child: const Text("Cancel")),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 4),
-                    child: FilledButton.tonal(
-                        onPressed: () {
-                          final weekdays = List.from(Weekday.values);
-                          for (var weedayInt
-                              in _habitStateData.recurrances.keys) {
-                            var weekday = Weekday.fromInt(weedayInt);
-                            weekdays.remove(weekday);
-                          }
-                          if (weekdays.isNotEmpty) {
-                            setState(() {
-                              final _random = new Random();
-                              var randomWeekday =
-                                  weekdays[_random.nextInt(weekdays.length)];
-                              _habitStateData
-                                  .recurrances[randomWeekday.intVal] = [];
-                            });
-                          }
-                        },
-                        child: Text("Add another week")),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 4),
-                    child: FilledButton(
-                        onPressed: () async {
-                          if (habitNameController.text.isEmpty) {
-                            ScaffoldMessenger.of(scaffoldMessengerCtx)
-                                .showSnackBar(
-                              SnackBar(
-                                content:
-                                    const Text('Fill up the habit name first'),
-                                duration: const Duration(seconds: 3),
-                              ),
-                            );
-                            return;
-                          }
-
-                          Navigator.of(context, rootNavigator: true).pop();
-                          // TODO This delays the database transaction. It is better to split the transaction to smaller chunks so that other Futures don't starve.
-                          if (!_isCreationMode && _srcHabit.valid) {
-                            await DatabaseHelper.deleteHabit(_srcHabit);
-                          }
-                          await DatabaseHelper.insertHabit(_habitStateData);
-                        },
-                        child: Text(_isCreationMode ? "Create" : "Modify")),
-                  )
-                ],
+                content: dialogContents(
+                    dialogWidth, getEntriesList, scaffoldMessengerCtx),
+                actions: dialogActions(scaffoldMessengerCtx),
               ),
             ),
           ),
+        ),
+      ),
+    );
+  }
+
+  List<Widget> dialogActions(BuildContext scaffoldMessengerCtx) {
+    return [
+      Padding(
+        padding: const EdgeInsets.symmetric(vertical: 4),
+        child: TextButton(
+            onPressed: () {
+              Navigator.of(context, rootNavigator: true).pop();
+            },
+            child: const Text("Cancel")),
+      ),
+      Padding(
+        padding: const EdgeInsets.symmetric(vertical: 4),
+        child: FilledButton.tonal(
+            onPressed: () {
+              final weekdays = List.from(Weekday.values);
+              for (var weedayInt in _habitStateData.recurrances.keys) {
+                var weekday = Weekday.fromInt(weedayInt);
+                weekdays.remove(weekday);
+              }
+              if (weekdays.isNotEmpty) {
+                setState(() {
+                  final _random = new Random();
+                  var randomWeekday =
+                      weekdays[_random.nextInt(weekdays.length)];
+                  _habitStateData.recurrances[randomWeekday.intVal] = [];
+                });
+              }
+            },
+            child: Text("Add week")),
+      ),
+      Padding(
+        padding: const EdgeInsets.symmetric(vertical: 4),
+        child: FilledButton(
+            onPressed: () async {
+              if (habitNameController.text.isEmpty) {
+                ScaffoldMessenger.of(scaffoldMessengerCtx).showSnackBar(
+                  SnackBar(
+                    content: const Text('Fill up the habit name first'),
+                    duration: const Duration(seconds: 3),
+                  ),
+                );
+                return;
+              }
+
+              Navigator.of(context, rootNavigator: true).pop();
+              // TODO This delays the database transaction. It is better to split the transaction to smaller chunks so that other Futures don't starve.
+              if (!_isCreationMode && _srcHabit.valid) {
+                await DatabaseHelper.deleteHabit(_srcHabit);
+              }
+              await DatabaseHelper.insertHabit(_habitStateData);
+            },
+            child: Text(_isCreationMode ? "Create" : "Modify")),
+      )
+    ];
+  }
+
+  Center dialogContents(
+      double dialogWidth,
+      List<Row> getEntriesList(BuildContext ctx),
+      BuildContext scaffoldMessengerCtx) {
+    return Center(
+      child: SizedBox(
+        // TODO add animation to this dynamic sizing
+        width: dialogWidth,
+        child: Column(
+          children: [
+            TextField(
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                hintText: 'Name of new habit',
+              ),
+              controller: habitNameController,
+            ),
+            SizedBox(height: 8),
+            Divider(),
+            (BuildContext context) {
+              final habitRecurranceEntries = getEntriesList(context);
+              return Expanded(
+                child: ListView.separated(
+                  scrollDirection: Axis.vertical,
+                  shrinkWrap: true,
+                  itemCount: habitRecurranceEntries.length,
+                  itemBuilder: (context, index) {
+                    return habitRecurranceEntries[index];
+                  },
+                  separatorBuilder: (context, index) => Divider(),
+                ),
+              );
+            }(scaffoldMessengerCtx),
+          ],
         ),
       ),
     );

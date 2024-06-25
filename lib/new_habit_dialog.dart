@@ -295,6 +295,8 @@ class _NewHabitDialogState extends State<NewHabitDialog> {
               if (!_isCreationMode && _srcHabit.valid) {
                 await DatabaseHelper.deleteHabit(_srcHabit);
               }
+              // TODO: Prompt the user to add a week first
+              // Can be done via a snackbar; same as above
               await DatabaseHelper.insertHabit(_habitStateData);
             },
             child: Text(_isCreationMode ? "Create" : "Modify")),

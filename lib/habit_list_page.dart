@@ -125,7 +125,8 @@ class _HabitListPageState extends State<HabitListPage> {
 
       habits.add(habitName);
       final buttonStyle = ButtonStyle(
-          backgroundColor: WidgetStateProperty.all(Colors.white),
+          backgroundColor: WidgetStateProperty.all(
+              Theme.of(context).colorScheme.primaryContainer),
           shape: WidgetStateProperty.all<RoundedRectangleBorder>(
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(4))));
       final trailingButtonRow = material.Row(
@@ -170,7 +171,7 @@ class _HabitListPageState extends State<HabitListPage> {
         ));
         paddedChip = Card(
           margin: EdgeInsets.all(0),
-          color: Colors.white,
+          color: Theme.of(context).colorScheme.surfaceContainer,
           child: Padding(
             padding: const EdgeInsets.all(8),
             child: Wrap(
@@ -192,7 +193,7 @@ class _HabitListPageState extends State<HabitListPage> {
         habitText = Text(habitName);
         paddedChip = Card(
           margin: EdgeInsets.all(0),
-          color: Colors.white,
+          color: Theme.of(context).colorScheme.surfaceContainer,
           child: Padding(
             padding: const EdgeInsets.all(8),
             child: Wrap(

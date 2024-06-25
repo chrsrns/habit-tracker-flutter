@@ -1,3 +1,4 @@
+import 'package:cohabit/settings_page.dart';
 import 'package:flutter/material.dart';
 import 'package:cohabit/habit_list_page.dart';
 
@@ -13,6 +14,6 @@ class NavDestinations {
 const List<NavDestinations> destinations = <NavDestinations>[
   NavDestinations('Habits', HabitListPage(), Icon(Icons.widgets_outlined),
       Icon(Icons.widgets)),
-  NavDestinations('Settings', Placeholder(), Icon(Icons.settings_outlined),
+  NavDestinations('Settings', SettingsPage(), Icon(Icons.settings_outlined),
       Icon(Icons.settings)),
 ];

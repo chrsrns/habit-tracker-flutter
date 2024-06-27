@@ -290,13 +290,35 @@ class _NewHabitDialogState extends State<NewHabitDialog> {
                 return;
               }
 
+              if (_habitStateData.recurrances.isEmpty) {
+                ScaffoldMessenger.of(scaffoldMessengerCtx).showSnackBar(
+                  SnackBar(
+                    content: const Text('Add a week first'),
+                    duration: const Duration(seconds: 3),
+                  ),
+                );
+                return;
+              }
+
+              bool timesEmpty = true;
+              for (final times in _habitStateData.recurrances.values) {
+                if (times.isNotEmpty) timesEmpty = false;
+              }
+              if (timesEmpty) {
+                ScaffoldMessenger.of(scaffoldMessengerCtx).showSnackBar(
+                  SnackBar(
+                    content: const Text('Set time for the weeks first'),
+                    duration: const Duration(seconds: 3),
+                  ),
+                );
+                return;
+              }
+
               Navigator.of(context, rootNavigator: true).pop();
               // TODO This delays the database transaction. It is better to split the transaction to smaller chunks so that other Futures don't starve.
               if (!_isCreationMode && _srcHabit.valid) {
                 await DatabaseHelper.deleteHabit(_srcHabit);
               }
-              // TODO: Prompt the user to add a week first
-              // Can be done via a snackbar; same as above
               await DatabaseHelper.insertHabit(_habitStateData);
             },
             child: Text(_isCreationMode ? "Create" : "Modify")),
